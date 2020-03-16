@@ -48,7 +48,7 @@
             <el-input placeholder="品牌首字母" v-model="searchMap.letter"></el-input>
         </el-form-item>
         <el-button type="primary" @click="fetchData">查询</el-button>
-        <el-button type="primary" @click="pojo={},formVisible = true">新增</el-button>
+        <el-button type="primary" @click="pojo={},imageUrl='',formVisible = true">新增</el-button>
     </el-form>
 
     <!--table表格-->
@@ -98,19 +98,20 @@
             <el-form-item label="品牌首字母">
                 <el-input placeholder="品牌首字母" v-model="pojo.letter"></el-input>
             </el-form-item>
+
             <el-form-item label="品牌图片">
-                <el-upload class="avatar-uploader" action="/upload/oss.do?folder=brand"
-                        :show-file-list="false"
+                <el-upload class="avatar-uploader" action="/upload/oss.do?folder=brand" :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         :before-upload="beforeAvatarUpload">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
-
             </el-form-item>
+
             <el-form-item label="品牌排序">
                 <el-input placeholder="品牌排序" v-model="pojo.seq"></el-input>
             </el-form-item>
+
             <el-form-item>
                 <el-button @click="save()">保存</el-button>
                 <el-button @click="formVisible = false">关闭</el-button>
@@ -155,10 +156,11 @@
             },
             save() {
                 this.pojo.image = this.imageUrl;
-                axios.post(`/brand/${this.pojo.id == null ? 'add' : 'update'}.do`, this.pojo).then(response => {
-                    this.formVisible = false;
-                    this.fetchData();
-                })
+                axios.post(`/brand/${this.pojo.id == null ? 'add' : 'update'}.do`, this.pojo)
+                    .then(response => {
+                        this.formVisible = false;
+                        this.fetchData();
+                    })
             },
             edit(id) {
                 this.formVisible = true;//打开窗口
@@ -168,7 +170,6 @@
                 })
             },
             dele(id) {
-
                 this.$confirm('确定要删除吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -177,17 +178,17 @@
                     //删除
                     axios.get(`/brand/delete.do?id=${id}`).then(response => {
                         this.$alert('删除成功', '提示');
-
                         this.fetchData();
-
-
                     })
                 });
-
             },
+
+            /*文件上传成功之后的钩子函数*/
             handleAvatarSuccess(res, file) {
                 this.imageUrl = file.response;
             },
+
+            /*文件上传前的钩子函数*/
             beforeAvatarUpload(file) {
                 const isJPG = file.type === 'image/jpeg';
                 const isLt2M = file.size / 1024 / 1024 < 2;
@@ -201,10 +202,7 @@
                 return isJPG && isLt2M;
             }
         }
-
     })
-
-
 </script>
 
 </html>

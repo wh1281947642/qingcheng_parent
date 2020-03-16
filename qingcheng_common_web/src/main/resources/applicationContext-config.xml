@@ -37,8 +37,8 @@
 	<!--阿里云OSS  -->
 	<bean id="ossClient" class="com.aliyun.oss.OSSClient">
 		<constructor-arg index="0" value="oss-cn-beijing.aliyuncs.com"></constructor-arg>
-		<constructor-arg index="1" value="AccessKeyID"></constructor-arg>
-		<constructor-arg index="2" value="AccessKeySecret"></constructor-arg>
+		<constructor-arg index="1" value="LTAI4FeY7Wtfht4dz38HL5Nw"></constructor-arg>
+		<constructor-arg index="2" value="DvLkqsEmGI4zMXr9bzW20dWD5UqFls"></constructor-arg>
 	</bean>
 
 	<!--开启任务调度-->
