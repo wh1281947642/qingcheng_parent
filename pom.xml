@@ -13,7 +13,12 @@
         <module>qingcheng_common_web</module>
         <module>qingcheng_pojo</module>
         <module>qingcheng_interface</module>
+        <module>qingcheng_service_business</module>
+        <module>qingcheng_service_config</module>
         <module>qingcheng_service_goods</module>
+        <module>qingcheng_service_order</module>
+        <module>qingcheng_service_system</module>
+        <module>qingcheng_service_user</module>
         <module>qingcheng_web_manager</module>
     </modules>
     <packaging>pom</packaging>
