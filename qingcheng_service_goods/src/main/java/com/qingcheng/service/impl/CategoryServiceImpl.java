@@ -22,6 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Category> findAll() {
         return categoryMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Category> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Category> categorys = (Page<Category>) categoryMapper.selectAll();
@@ -43,6 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Category> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return categoryMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Category> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param id
      * @return
      */
+    @Override
     public Category findById(Integer id) {
         return categoryMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
      * 新增
      * @param category
      */
+    @Override
     public void add(Category category) {
         categoryMapper.insert(category);
     }
@@ -83,6 +89,7 @@ public class CategoryServiceImpl implements CategoryService {
      * 修改
      * @param category
      */
+    @Override
     public void update(Category category) {
         categoryMapper.updateByPrimaryKeySelective(category);
     }
@@ -91,6 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         //判断是否存在下级分类
         Example example=new Example(Category.class);
@@ -149,5 +157,4 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return example;
     }
-
 }

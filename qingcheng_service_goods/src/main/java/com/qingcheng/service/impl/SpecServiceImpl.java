@@ -29,6 +29,7 @@ public class SpecServiceImpl implements SpecService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Spec> findAll() {
         return specMapper.selectAll();
     }
@@ -39,6 +40,7 @@ public class SpecServiceImpl implements SpecService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Spec> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Spec> specs = (Page<Spec>) specMapper.selectAll();
@@ -50,6 +52,7 @@ public class SpecServiceImpl implements SpecService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Spec> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return specMapper.selectByExample(example);
@@ -62,6 +65,7 @@ public class SpecServiceImpl implements SpecService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Spec> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -74,6 +78,7 @@ public class SpecServiceImpl implements SpecService {
      * @param id
      * @return
      */
+    @Override
     public Spec findById(Integer id) {
         return specMapper.selectByPrimaryKey(id);
     }
@@ -82,6 +87,7 @@ public class SpecServiceImpl implements SpecService {
      * 新增
      * @param spec
      */
+    @Override
     @Transactional
     public void add(Spec spec) {
         specMapper.insert(spec);
@@ -95,6 +101,7 @@ public class SpecServiceImpl implements SpecService {
      * 修改
      * @param spec
      */
+    @Override
     public void update(Spec spec) {
         specMapper.updateByPrimaryKeySelective(spec);
     }
@@ -103,6 +110,7 @@ public class SpecServiceImpl implements SpecService {
      *  删除
      * @param id
      */
+    @Override
     @Transactional
     public void delete(Integer id) {
         //将模板中的规格数量减一

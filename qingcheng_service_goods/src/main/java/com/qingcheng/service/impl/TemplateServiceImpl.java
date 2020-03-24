@@ -22,6 +22,7 @@ public class TemplateServiceImpl implements TemplateService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Template> findAll() {
         return templateMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class TemplateServiceImpl implements TemplateService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Template> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Template> templates = (Page<Template>) templateMapper.selectAll();
@@ -43,6 +45,7 @@ public class TemplateServiceImpl implements TemplateService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Template> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return templateMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class TemplateServiceImpl implements TemplateService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Template> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class TemplateServiceImpl implements TemplateService {
      * @param id
      * @return
      */
+    @Override
     public Template findById(Integer id) {
         return templateMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class TemplateServiceImpl implements TemplateService {
      * 新增
      * @param template
      */
+    @Override
     public void add(Template template) {
         template.setSpecNum(0);
         template.setParaNum(0);
@@ -85,6 +91,7 @@ public class TemplateServiceImpl implements TemplateService {
      * 修改
      * @param template
      */
+    @Override
     public void update(Template template) {
         templateMapper.updateByPrimaryKeySelective(template);
     }
@@ -93,6 +100,7 @@ public class TemplateServiceImpl implements TemplateService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         templateMapper.deleteByPrimaryKey(id);
     }
