@@ -34,4 +34,5 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
     <import resource="classpath:applicationContext-goods-dao.xml"/>
     <import resource="classpath:applicationContext-goods-dubbo.xml"/>
+    <import resource="classpath:applicationContext-service.xml"/>
 </beans>
