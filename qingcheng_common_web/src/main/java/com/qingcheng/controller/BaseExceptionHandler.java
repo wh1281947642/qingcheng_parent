@@ -25,7 +25,7 @@ public class BaseExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Exception.class) //指定检测的异常类型
     public Result error(Exception e){
-        System.out.println("调用了异常处理");
+        System.out.println("BaseExceptionHandler:全局异常处理！");
         e.printStackTrace();
         logger.error(e.getMessage());
         return new Result(1,e.getMessage());
