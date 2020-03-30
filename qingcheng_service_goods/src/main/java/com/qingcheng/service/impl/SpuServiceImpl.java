@@ -3,17 +3,14 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.qingcheng.dao.CategoryBrandMapper;
 import com.qingcheng.dao.CategoryMapper;
 import com.qingcheng.dao.SkuMapper;
 import com.qingcheng.dao.SpuMapper;
 import com.qingcheng.entity.PageResult;
-import com.qingcheng.pojo.goods.Category;
-import com.qingcheng.pojo.goods.Goods;
-import com.qingcheng.pojo.goods.Sku;
-import com.qingcheng.pojo.goods.Spu;
+import com.qingcheng.pojo.goods.*;
 import com.qingcheng.service.goods.SpuService;
 import com.qingcheng.util.IdWorker;
-import com.sun.tools.javac.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -40,6 +37,9 @@ public class SpuServiceImpl implements SpuService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private CategoryBrandMapper categoryBrandMapper;
 
     @Autowired
     private IdWorker idWorker;
@@ -167,7 +167,6 @@ public class SpuServiceImpl implements SpuService {
             String name = spu.getName();
             //获取规格参数
             String spec = sku.getSpec();
-            System.out.println(spec);
             if(!org.springframework.util.StringUtils.isEmpty(spec)){
                 Map<String,String> specMap = JSON.parseObject(spec, Map.class);
                 //遍历map
@@ -202,6 +201,125 @@ public class SpuServiceImpl implements SpuService {
             sku.setSaleNum(0);
             skuMapper.insertSelective(sku);
         });
+
+        //建立分类与品牌的关联
+        CategoryBrand categoryBrand = new CategoryBrand();
+        //分类id
+        categoryBrand.setCategoryId(spu.getCategory3Id());
+        //品牌id
+        categoryBrand.setBrandId(spu.getBrandId());
+        //先统计是否已经存在该数据
+        int count = categoryBrandMapper.selectCount(categoryBrand);
+        if (count == 0){
+            categoryBrandMapper.insertSelective(categoryBrand);
+        }
+    }
+
+    /**
+     * 根据spuId查询Goods
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 15:24
+     * @param
+     * @return
+     */
+    @Override
+    public Goods findGoodsById(String id){
+
+        //查询spu
+        Spu spu = this.spuMapper.selectByPrimaryKey(id);
+
+        //查询sku列表
+        Sku sku = new Sku();
+        sku.setSpuId(id);
+        List<Sku> skuList = this.skuMapper.select(sku);
+        //封装为组合实体类Goods
+        Goods goods = new Goods();
+        goods.setSpu(spu);
+        goods.setSkuList(skuList);
+
+        return goods;
+    }
+
+    /**
+     * 修改商品
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 16:37
+     * @param
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class )
+    public void updateGoods(Goods goods){
+        Date date = new Date();
+        Spu spu = goods.getSpu();
+        //商品分类
+        Category category = categoryMapper.selectByPrimaryKey(spu.getCategory3Id());
+        //先删除skuList
+        Sku sku = new Sku();
+        sku.setSpuId(spu.getId());
+        List<Sku> skuListOld = this.skuMapper.select(sku);
+        skuListOld.forEach(sku1 -> {
+            this.skuMapper.delete(sku1);
+        });
+
+        //修改spu
+        this.spuMapper.updateByPrimaryKeySelective(spu);
+
+        //修改skuList
+        List<Sku> skuList = goods.getSkuList();
+        skuList.forEach(sku2 -> {
+            //设置外键 spuId
+            sku2.setSpuId(spu.getId());
+            //sku名称 = spu名称+规格值列表
+            String name = spu.getName();
+            //获取规格参数
+            String spec = sku2.getSpec();
+            if(!org.springframework.util.StringUtils.isEmpty(spec)){
+                Map<String,String> specMap = JSON.parseObject(spec, Map.class);
+                //遍历map
+                //方法1 用迭代器
+                Set<Map.Entry<String, String>> entrySet = specMap.entrySet();
+
+            /*Iterator<Map.Entry<String, String>> iterator = entrySet.iterator();
+            while (iterator.hasNext()){
+                Map.Entry<String, String> entry = iterator.next();
+                name= name + " " + entry.getValue();
+            }*/
+
+                //方法2 增强for循环
+                for (Map.Entry<String, String> entry : entrySet) {
+                    name= name + " " + entry.getValue();
+                }
+            }
+
+            //sku名称
+            sku2.setName(name);
+            //修改日期
+            sku2.setUpdateTime(date);
+            //商品分类id
+            sku2.setCategoryId(spu.getCategory3Id());
+            //商品分类名称
+            sku2.setCategoryName(category.getName());
+            //评论数 默认为0
+            sku2.setCommentNum(0);
+            //销售数量 默认为0
+            sku2.setSaleNum(0);
+            skuMapper.insertSelective(sku2);
+        });
+
+        //建立分类与品牌的关联
+        CategoryBrand categoryBrand = new CategoryBrand();
+        //分类id
+        categoryBrand.setCategoryId(spu.getCategory3Id());
+        //品牌id
+        categoryBrand.setBrandId(spu.getBrandId());
+        //先统计是否已经存在该数据
+        int count = categoryBrandMapper.selectCount(categoryBrand);
+        if (count == 0){
+            categoryBrandMapper.insertSelective(categoryBrand);
+        }
     }
 
     /**

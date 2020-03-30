@@ -61,10 +61,45 @@ public class SpuController {
         return new Result();
     }
 
-    @PostMapping("/save")
+    /**
+     * 保存商品
+     * @description 
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 15:33
+     * @param
+     * @return
+     */
+    @PostMapping("/saveGoods")
     public  Result save(@RequestBody Goods goods){
         this.spuService.saveGoods(goods);
         return new Result();
     }
 
+    /**
+     * 根据spuId查询Goods
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 15:33
+     * @param id
+     * @return Goods
+     */
+    @GetMapping("/findGoodsById")
+    public Goods findGoodsById(String id){
+        Goods goods = this.spuService.findGoodsById(id);
+        return goods;
+    }
+
+    /**
+     * 修改商品
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 15:33
+     * @param goods
+     * @return Result
+     */
+    @PostMapping("/updateGoods")
+    public Result updateGoods(@RequestBody Goods goods){
+        this.spuService.updateGoods(goods);
+        return new Result();
+    }
 }

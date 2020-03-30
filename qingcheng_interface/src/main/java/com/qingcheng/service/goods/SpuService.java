@@ -30,9 +30,35 @@ public interface SpuService {
 
     public void update(Spu spu);
 
-
     public void delete(String id);
 
+    /**
+     * 保存商品
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 15:24
+     * @param
+     * @return
+     */
     public void saveGoods(Goods goods);
 
+    /**
+     * 查询商品
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 15:24
+     * @param id
+     * @return Goods
+     */
+    public Goods findGoodsById(String id);
+
+    /**
+     * 修改商品
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/30 16:37
+     * @param goods
+     * @return
+     */
+    public void updateGoods(Goods goods);
 }
