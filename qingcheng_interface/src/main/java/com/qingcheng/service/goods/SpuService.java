@@ -61,4 +61,46 @@ public interface SpuService {
      * @return
      */
     public void updateGoods(Goods goods);
+
+    /**
+     * 商品审核
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:22
+     * @param  id 商品id
+     * @param  status 状态
+     * @param  message
+     * @return
+     */
+    public void audit(String id,String status,String message);
+
+    /**
+     * 商品下架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:41
+     * @param id spuId
+     * @return
+     */
+    public void pull(String id);
+
+    /**
+     * 商品上架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:41
+     * @param id spuId
+     * @return
+     */
+    public void put(String id);
+
+    /**
+     * 批量上架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:58
+     * @param
+     * @return
+     */
+    public int putMany(String [] ids);
 }

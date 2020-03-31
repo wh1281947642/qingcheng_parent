@@ -11,6 +11,7 @@ import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.goods.*;
 import com.qingcheng.service.goods.SpuService;
 import com.qingcheng.util.IdWorker;
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -322,6 +323,106 @@ public class SpuServiceImpl implements SpuService {
         }
     }
 
+
+    /**
+     * 商品审核
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:22
+     * @param  id 商品id
+     * @param  status 状态
+     * @param  message
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class )
+    public void audit(String id, String status, String message){
+
+        // 1.修改状态 审核状态和上架状态
+        //Spu spu = this.spuMapper.selectByPrimaryKey(id);
+        Spu spu = new Spu();
+        spu.setId(id);
+        spu.setStatus(status);
+        //审核通过 需要在设置上下架状态
+        if ("1".equals(status)){
+            //自动上架
+            spu.setIsMarketable("1");
+        }
+        //根据主键修改
+        this.spuMapper.updateByPrimaryKeySelective(spu);
+
+        // 2.记录商品审核记录
+
+        // 3.记录商品日志
+    }
+
+    /**
+     * 商品下架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:41
+     * @param id spuId
+     * @return
+     */
+    @Override
+    public void pull(String id){
+
+        // 1.修改状态
+        //Spu spu = this.spuMapper.selectByPrimaryKey(id);
+        Spu spu = new Spu();
+        spu.setId(id);
+        spu.setIsMarketable("0");
+        this.spuMapper.updateByPrimaryKeySelective(spu);
+        // 2.记录商品日志
+    }
+
+    /**
+     * 商品上架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:41
+     * @param id spuId
+     * @return
+     */
+    @Override
+    public void put(String id){
+        // 1.修改状态
+        Spu spu = this.spuMapper.selectByPrimaryKey(id);
+        //验证商品是否审核过
+        if ( ! "1".equals(spu.getStatus())){
+            throw new RuntimeException("此商品未通过审核！");
+        }
+        spu.setIsMarketable("1");
+        this.spuMapper.updateByPrimaryKeySelective(spu);
+        // 2.记录商品日志
+    }
+
+    /**
+     * 批量上架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:58
+     * @param
+     * @return
+     */
+    @Override
+    public int putMany(String [] ids){
+        // 1.修改状态
+        int num = 0;
+        for (String id : ids) {
+            Spu spu = this.spuMapper.selectByPrimaryKey(id);
+            //审核过且未上架
+            if ("1".equals(spu.getStatus()) && "0".equals(spu.getIsMarketable()) ){
+                spu.setIsMarketable("1");
+                this.spuMapper.updateByPrimaryKeySelective(spu);
+                num++;
+            }
+        }
+
+        // 2.添加商品日志
+        return  num;
+    }
+
     /**
      * 构建查询条件
      * @param searchMap
@@ -424,5 +525,4 @@ public class SpuServiceImpl implements SpuService {
         }
         return example;
     }
-
 }

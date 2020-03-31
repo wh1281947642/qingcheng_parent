@@ -102,4 +102,63 @@ public class SpuController {
         this.spuService.updateGoods(goods);
         return new Result();
     }
+
+    /**
+     * 商品审核
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:22
+     * @param  map
+     * @return
+     */
+    @PostMapping("/auditGoods")
+    public Result audit(@RequestBody Map<String,String> map){
+        String id = map.get("id");
+        String status = map.get("status");
+        String message = map.get("message");
+        this.spuService.audit(id,status,message);
+        return new Result();
+    }
+
+    /**
+     * 商品下架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:41
+     * @param id spuId
+     * @return
+     */
+    @GetMapping("/pullGoods")
+    public Result pull(String id){
+        this.spuService.pull(id);
+        return new Result();
+    }
+
+    /**
+     * 商品上架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:41
+     * @param id spuId
+     * @return
+     */
+    @GetMapping("/putGoods")
+    public Result put(String id){
+        this.spuService.put(id);
+        return new Result();
+    }
+
+    /**
+     * 商品上架
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/03/31 10:41
+     * @param ids spuId数组
+     * @return
+     */
+    @GetMapping("/putManyGoods")
+    public Result putMany(String [] ids){
+        int i = this.spuService.putMany(ids);
+        return new Result(0,"上架" + i + "个商品");
+    }
 }
