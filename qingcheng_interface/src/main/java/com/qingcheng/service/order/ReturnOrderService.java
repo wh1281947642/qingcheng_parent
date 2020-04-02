@@ -32,4 +32,28 @@ public interface ReturnOrderService {
 
     public void delete(Long id);
 
+    /**
+     * 同意退款
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/01 15:07
+     * @param id 商品id
+     * @param money 退款金额
+     * @param adminId 管理员id
+     * @return
+     */
+    public void agreeRefund(String id,Integer money,Integer adminId);
+
+    /**
+     * 驳回退款请求
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/01 15:21
+     * @param id 商品id
+     * @param remark 退款金额
+     * @param adminId 管理员id
+     * @return
+     */
+    public void rejectRefund(String id,String remark,Integer adminId);
+
 }

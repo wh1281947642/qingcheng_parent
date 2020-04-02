@@ -32,4 +32,15 @@ public interface OrderService {
 
     public void delete(String id);
 
+    /**
+     * 批量发货
+     *
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/01 16:16
+     * @param orders
+     * @return
+     */
+    public void batchSend(List<Order> orders);
+
 }

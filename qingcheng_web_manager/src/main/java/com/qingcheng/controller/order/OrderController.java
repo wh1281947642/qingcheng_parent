@@ -60,4 +60,17 @@ public class OrderController {
         return new Result();
     }
 
+    /**
+     * 批量发货
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/01 16:20
+     * @param
+     * @return
+     */
+    @PostMapping("/batchSend")
+    public Result batchSend(@RequestBody  List<Order> orders){
+        orderService.batchSend(orders);
+        return new Result();
+    }
 }

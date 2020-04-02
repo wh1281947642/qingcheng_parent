@@ -9,6 +9,8 @@ import com.qingcheng.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Order> findAll() {
         return orderMapper.selectAll();
     }
@@ -32,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Order> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Order> orders = (Page<Order>) orderMapper.selectAll();
@@ -43,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Order> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return orderMapper.selectByExample(example);
@@ -55,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Order> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +73,7 @@ public class OrderServiceImpl implements OrderService {
      * @param id
      * @return
      */
+    @Override
     public Order findById(String id) {
         return orderMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +82,7 @@ public class OrderServiceImpl implements OrderService {
      * 新增
      * @param order
      */
+    @Override
     public void add(Order order) {
         orderMapper.insert(order);
     }
@@ -83,6 +91,7 @@ public class OrderServiceImpl implements OrderService {
      * 修改
      * @param order
      */
+    @Override
     public void update(Order order) {
         orderMapper.updateByPrimaryKeySelective(order);
     }
@@ -91,8 +100,36 @@ public class OrderServiceImpl implements OrderService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(String id) {
         orderMapper.deleteByPrimaryKey(id);
+    }
+
+
+    /**
+     * 批量发货
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/01 16:17
+     * @param
+     * @return
+     */
+    @Override
+    public void batchSend(List<Order> orders) {
+        //判断运单号和物流公司是否为空
+        for(Order order :orders){
+            if(order.getShippingCode()==null || order.getShippingName()==null){
+                throw new RuntimeException("请选择快递公司和填写快递单号");
+            }
+        }
+        //循环订单
+        for(Order order :orders){
+            order.setOrderStatus("3");//订单状态  已发货
+            order.setConsignStatus("2");//发货状态  已发货
+            order.setConsignTime(new Date());//发货时间
+            orderMapper.updateByPrimaryKeySelective(order);
+            //记录订单日志  。。。（代码略）
+        }
     }
 
     /**
@@ -189,7 +226,10 @@ public class OrderServiceImpl implements OrderService {
             if(searchMap.get("payMoney")!=null ){
                 criteria.andEqualTo("payMoney",searchMap.get("payMoney"));
             }
-
+            // 根据  id 数组查询 查询
+            if(searchMap.get("ids")!=null ){
+                criteria.andIn("id", Arrays.asList((String[])searchMap.get("ids")));
+            }
         }
         return example;
     }

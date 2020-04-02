@@ -60,4 +60,33 @@ public class ReturnOrderController {
         return new Result();
     }
 
+    /**
+     * 同意退款
+     *
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/01 15:15
+     * @param
+     * @return 
+     */
+    public Result agreeRefund(String id, Integer money){
+        Integer adminId=0;//获取当前登陆人ID
+        returnOrderService.agreeRefund(id,money,adminId);
+        return new Result(); 
+    }
+
+    /**
+     * 驳回退款
+     *
+     * @description TODO
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/01 15:31
+     * @param
+     * @return
+     */
+    public Result rejectRefund(String id, String remark){
+        Integer adminId=0;//获取当前登陆人ID
+        returnOrderService.rejectRefund(id,remark,adminId);
+        return new Result();
+    }
 }
