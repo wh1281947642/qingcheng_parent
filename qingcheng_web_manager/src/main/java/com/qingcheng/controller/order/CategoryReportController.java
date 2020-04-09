@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +30,15 @@ public class CategoryReportController {
     @GetMapping("/yesterday")
     public List<CategoryReport> yesterday(){
         LocalDate localDate= LocalDate.now().minusDays(1);//得到昨天的日期
-        return categoryReportService.categoryReport(localDate);
+        //return categoryReportService.categoryReport(localDate);
+
+        String strDate = "2019-04-15";
+        String pat = "yyyy-MM-dd";
+        //指定转换格式
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(pat);
+        //进行转换
+        LocalDate date = LocalDate.parse(strDate, fmt);
+        return categoryReportService.categoryReport(date);
     }
 
 
@@ -35,6 +46,25 @@ public class CategoryReportController {
     @GetMapping("/category1Count")
     public List<Map> category1Count(String date1,String date2){
         return categoryReportService.category1Count(date1,date2);
+    }
+
+
+    public static void main(String[] args) {
+
+        LocalDate localDate= LocalDate.now().minusDays(1);//得到昨天的日期
+        LocalDate now = LocalDate.now();
+        System.out.println(localDate);
+        System.out.println(now);
+
+        String strDate = "2019-04-15";
+        String pat = "yyyy-MM-dd";
+        //指定转换格式
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(pat);
+        //进行转换
+        LocalDate date = LocalDate.parse(strDate, fmt);
+
+        System.out.println(date);
+
     }
 
 

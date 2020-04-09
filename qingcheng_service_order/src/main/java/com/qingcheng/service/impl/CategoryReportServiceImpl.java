@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,13 +29,13 @@ public class CategoryReportServiceImpl implements CategoryReportService {
     public void createData() {
 
         //查询昨天的类目统计数据
-        LocalDate localDate=LocalDate.now().minusDays(1);
+       /* LocalDate localDate=LocalDate.now().minusDays(1);
         List<CategoryReport> categoryReports = categoryReportMapper.categoryReport(localDate);
 
         //保存到tb_category_report
         for(CategoryReport categoryReport:categoryReports){
             categoryReportMapper.insert(categoryReport);
-        }
+        }*/
 
     }
 

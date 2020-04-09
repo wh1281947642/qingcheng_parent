@@ -36,9 +36,9 @@ public class OrderTask {
     * @param
     * @return
     */
-    @Scheduled(cron = "0 0/2 * * * ?")
+    /*@Scheduled(cron = "0 0/2 * * * ?")
     public void orderTimeOutLogic(){
         System.out.println("每两分钟间隔执行一次任务"+ new Date());
         orderService.orderTimeOutLogic();
-    }
+    }*/
 }
