@@ -41,8 +41,14 @@ public class CategoryReportController {
         return categoryReportService.categoryReport(date);
     }
 
-
-
+    /**
+     * 按日期统计一级分类数据
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/09 21:22
+     * @param
+     * @return
+     */
     @GetMapping("/category1Count")
     public List<Map> category1Count(String date1,String date2){
         return categoryReportService.category1Count(date1,date2);
