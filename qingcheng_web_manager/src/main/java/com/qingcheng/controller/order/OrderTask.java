@@ -28,10 +28,10 @@ public class OrderTask {
     private CategoryReportService categoryReportService;
 
 
-    @Scheduled(cron = "* * * * * ?")
+    /*@Scheduled(cron = "* * * * * ?")
     public void orderTimeOutLogic(){
         System.out.println(new Date());
-    }
+    }*/
 
    /**
     * 订单超时未付款 自动关闭
@@ -47,10 +47,10 @@ public class OrderTask {
         orderService.orderTimeOutLogic();
     }*/
 
-   @Scheduled(cron = "0 0 1 * * ?")
+  /* @Scheduled(cron = "0 0 1 * * ?")
     public void createCategoryReportDate(){
         System.out.println("生成类目统计数据");
         categoryReportService.createData();
-    }
+    }*/
 
 }

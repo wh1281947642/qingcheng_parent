@@ -1,0 +1,4 @@
+com\qingcheng\dao\ActivityMapper.class
+com\qingcheng\service\impl\AdServiceImpl.class
+com\qingcheng\service\impl\ActivityServiceImpl.class
+com\qingcheng\dao\AdMapper.class

@@ -30,11 +30,18 @@ public interface CategoryReportMapper extends Mapper<CategoryReport> {
             "WHERE r.category_id1=c.id AND count_date>=#{date1} AND count_date<=#{date2} " +
             "GROUP BY category_id1,c.name")*/
 
-    @Select("SELECT category_id1 categoryId1, SUM(num) num, SUM(money) money "+
+    /*@Select("SELECT category_id1 categoryId1, SUM(num) num, SUM(money) money "+
             "FROM tb_category_report "+
             "WHERE count_date >= #{date1} "+
             "AND count_date <= #{date2} "+
-            "GROUP BY category_id1")
+            "GROUP BY category_id1")*/
+
+    @Select("SELECT r.category_id1 categoryId1,c.NAME categoryName,SUM(r.num) num,SUM(r.money) money " +
+            "FROM tb_category_report r, V_category1 c " +
+            "WHERE r.category_id1 = c.id " +
+            "AND r.count_date >= #{date1} " +
+            "AND r.count_date <= #{date2} " +
+            "GROUP BY category_id1,c. NAME;")
     public List<Map>  category1Count(@Param("date1") String date1, @Param("date2") String date2);
 
 }
