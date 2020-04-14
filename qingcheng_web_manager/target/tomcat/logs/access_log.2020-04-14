@@ -1,0 +1,4 @@
+0:0:0:0:0:0:0:1 - - [14/Apr/2020:20:24:43 +0800] "GET /categoryReport/yesterday.do HTTP/1.1" 200 426 http-bio-9101-exec-2 661
+0:0:0:0:0:0:0:1 - - [14/Apr/2020:20:24:43 +0800] "GET /favicon.ico HTTP/1.1" 404 973 http-bio-9101-exec-3 8
+0:0:0:0:0:0:0:1 - - [14/Apr/2020:20:25:16 +0800] "GET /report/categoryReport.html HTTP/1.1" 200 6615 http-bio-9101-exec-6 339
+0:0:0:0:0:0:0:1 - - [14/Apr/2020:20:27:12 +0800] "GET /categoryReport/category1Count.do?date1=2019-04-15&date2=2019-04-16 HTTP/1.1" 200 163 http-bio-9101-exec-8 419
