@@ -1,6 +1,7 @@
 com\qingcheng\service\goods\ParaService.class
 com\qingcheng\service\goods\PrefService.class
 com\qingcheng\service\goods\CategoryService.class
+com\qingcheng\service\order\CategoryReportService.class
 com\qingcheng\service\user\ProvincesService.class
 com\qingcheng\service\order\PreferentialService.class
 com\qingcheng\service\order\ReturnCauseService.class

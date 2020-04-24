@@ -23,6 +23,7 @@ com\qingcheng\pojo\system\Role.class
 com\qingcheng\pojo\order\ReturnOrder.class
 com\qingcheng\pojo\goods\Sku.class
 com\qingcheng\pojo\user\Provinces.class
+com\qingcheng\pojo\order\CategoryReport.class
 com\qingcheng\pojo\goods\Pref.class
 com\qingcheng\pojo\goods\Template.class
 com\qingcheng\pojo\goods\Category.class

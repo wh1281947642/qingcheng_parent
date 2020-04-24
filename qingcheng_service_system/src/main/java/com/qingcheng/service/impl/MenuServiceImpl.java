@@ -9,8 +9,11 @@ import com.qingcheng.service.system.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MenuServiceImpl implements MenuService {
@@ -22,6 +25,7 @@ public class MenuServiceImpl implements MenuService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Menu> findAll() {
         return menuMapper.selectAll();
     }
@@ -32,6 +36,7 @@ public class MenuServiceImpl implements MenuService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Menu> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Menu> menus = (Page<Menu>) menuMapper.selectAll();
@@ -43,6 +48,7 @@ public class MenuServiceImpl implements MenuService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Menu> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return menuMapper.selectByExample(example);
@@ -55,6 +61,7 @@ public class MenuServiceImpl implements MenuService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Menu> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +74,7 @@ public class MenuServiceImpl implements MenuService {
      * @param id
      * @return
      */
+    @Override
     public Menu findById(String id) {
         return menuMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +83,7 @@ public class MenuServiceImpl implements MenuService {
      * 新增
      * @param menu
      */
+    @Override
     public void add(Menu menu) {
         menuMapper.insert(menu);
     }
@@ -83,6 +92,7 @@ public class MenuServiceImpl implements MenuService {
      * 修改
      * @param menu
      */
+    @Override
     public void update(Menu menu) {
         menuMapper.updateByPrimaryKeySelective(menu);
     }
@@ -91,8 +101,53 @@ public class MenuServiceImpl implements MenuService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(String id) {
         menuMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+      * 查询全部菜单
+      * @return
+      */
+    @Override
+    public List<Map> findAllMenu() {
+
+        //不推荐使用方式1 因为和数据库需要频繁交互，交互的次数=1+一级菜单数据+二级菜单数量
+        //方式1:首先按照条件查询上级菜单为0的列表(1级菜单)，循环得到每个一级菜单id，查询二级菜单，嵌套循环得到二级菜单id，查询三级菜单
+
+        //方式2 首先把符合条件得的菜单查询出来（列表）,通过内存判断赛选出符合条件的记录（每一级的菜单列表）
+        List<Menu> menuList = this.findAll();
+        return findMenuListByParentId(menuList,"0");
+    }
+
+    private List<Map> findMenuListByParentId(List<Menu> menuList,String parentId){
+
+        List<Map> mapList = new ArrayList<Map>();
+        menuList.forEach(menu -> {
+            if (menu.getParentId().equals(parentId)){
+                Map map=new HashMap();
+                map.put("path", menu.getId());
+                map.put("title", menu.getName());
+                map.put("icon",menu.getIcon());
+                map.put("linkUrl",menu.getUrl());
+                map.put("children",findMenuListByParentId(menuList,menu.getId()));
+                mapList.add(map);
+            }
+        });
+
+        /*List<Map> maplist = menuList.stream().map(menu -> {
+            Map<String, Object> map = new HashMap<>();
+            if (menu.getParentId().equals(parentId)){
+                map.put("path", menu.getId());
+                map.put("title", menu.getName());
+                map.put("icon",menu.getIcon());
+                map.put("linkUrl",menu.getUrl());
+                map.put("children",findMenuListByParentId(menuList,menu.getId()));
+            }
+            return map;
+        }).collect(Collectors.toList());*/
+        return mapList;
     }
 
     /**
@@ -124,8 +179,6 @@ public class MenuServiceImpl implements MenuService {
             if(searchMap.get("parentId")!=null && !"".equals(searchMap.get("parentId"))){
                 criteria.andLike("parentId","%"+searchMap.get("parentId")+"%");
             }
-
-
         }
         return example;
     }
