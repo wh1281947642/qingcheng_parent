@@ -1,6 +1,7 @@
 com\qingcheng\controller\order\OrderTask.class
 com\qingcheng\controller\order\OrderConfigController.class
 com\qingcheng\controller\system\MenuController.class
+com\qingcheng\controller\order\CategoryReportController.class
 com\qingcheng\controller\goods\SpuController.class
 com\qingcheng\controller\order\OrderController.class
 com\qingcheng\controller\business\AdController.class
@@ -13,6 +14,7 @@ com\qingcheng\controller\user\CitiesController.class
 com\qingcheng\controller\order\OrderItemController.class
 com\qingcheng\controller\goods\SkuController.class
 com\qingcheng\controller\goods\PrefController.class
+com\qingcheng\controller\UserDetailsServiceImpl.class
 com\qingcheng\controller\goods\ParaController.class
 com\qingcheng\controller\user\ProvincesController.class
 com\qingcheng\controller\goods\AlbumController.class

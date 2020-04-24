@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+			 xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<http pattern="/login.html" security="none"></http>
+	<!--<http pattern="/login_error.html" security="none"></http>-->
+	<http pattern="/login_error.html" security="none"></http>
+	<http pattern="/css/**" security="none"></http>
+	<http pattern="/img/**" security="none"></http>
+	<http pattern="/js/**" security="none"></http>
+	<http pattern="/*.ico" security="none"></http>
+
+
+	<!--页面的拦截规则-->
+	<http>
+		<!--所有资源必须有ROLE_ADMIN角色才可以访问-->
+		<intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')"></intercept-url>
+		<!--当前的工程自动实现表单登录-->
+		<!--<form-login></form-login>-->
+		<form-login login-page="/login.html" default-target-url="/main.html" authentication-failure-url="/login.html"/>
+		<!--退出登录-->
+		<logout/>
+
+		<!--关闭csrf 跨站请求伪造 token-->
+		<csrf disabled="true"></csrf>
+	</http>
+
+	<!--认证管理器的配置-->
+	<authentication-manager>
+		<authentication-provider user-service-ref="userDetailsService">
+			<!--<user-service>
+                <user name="admin" password="{bcrypt}$2a$10$BYjrGcPFwet99qaK7sNh8OV9P7ZQzCTpPHr603GQgRuwg0uphoNJ6" authorities="ROLE_ADMIN"></user>
+                &lt;!&ndash;<user name="admin" password="$2a$10$BYjrGcPFwet99qaK7sNh8OV9P7ZQzCTpPHr603GQgRuwg0uphoNJ6" authorities="ROLE_ADMIN"></user>&ndash;&gt;
+            </user-service>-->
+			<password-encoder ref="bcryptEncoder"></password-encoder>
+		</authentication-provider>
+	</authentication-manager>
+
+	<beans:bean id="bcryptEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"> </beans:bean>
+	<beans:bean id="userDetailsService" class="com.qingcheng.controller.UserDetailsServiceImpl"></beans:bean>
+</beans:beans>
