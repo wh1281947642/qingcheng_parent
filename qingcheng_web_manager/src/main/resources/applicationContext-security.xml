@@ -20,7 +20,7 @@
 		<!--当前的工程自动实现表单登录-->
 		<!--<form-login></form-login>-->
 		<form-login login-page="/login.html" default-target-url="/main.html" authentication-failure-url="/login.html"/>
-		<!--退出登录-->
+		<!--退出登录 /logout post-->
 		<logout/>
 
 		<!--关闭csrf 跨站请求伪造 token-->
