@@ -38,7 +38,7 @@
                         <el-dropdown class="avatar-container right-menu-item" trigger="click">
                             <div class="avatar-wrapper">
                                 <img src="img/user2-160x160.jpg" class="user-avatar">
-                                Jay.Liu
+                                {{loginName}}
                             </div>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item divided>
@@ -148,6 +148,7 @@
             defaultActiveIndex: "2",
             defaultActive:'2-1-2',
             openeds: [],
+            loginName:'',
             linkUrl:'all-item-list.html'
             }
         },
@@ -170,6 +171,11 @@
                     data.push(this.data.children[i].path)
                 }
                 this.openeds=data
+            })
+
+            //加载并显示当前登录名
+            axios.get('/login/name.do').then(response=>{
+                this.loginName = response.data.name;
             })
         },
         methods: {

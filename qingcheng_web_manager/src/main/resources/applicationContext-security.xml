@@ -25,6 +25,11 @@
 
 		<!--关闭csrf 跨站请求伪造 token-->
 		<csrf disabled="true"></csrf>
+
+		<!--同源策略-->
+		<headers>
+			<frame-options policy="SAMEORIGIN"></frame-options>
+		</headers>
 	</http>
 
 	<!--认证管理器的配置-->
