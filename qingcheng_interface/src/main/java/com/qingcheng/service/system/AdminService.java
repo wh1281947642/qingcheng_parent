@@ -1,5 +1,6 @@
 package com.qingcheng.service.system;
 import com.qingcheng.entity.PageResult;
+import com.qingcheng.entity.Result;
 import com.qingcheng.pojo.system.Admin;
 
 import java.util.*;
@@ -32,4 +33,13 @@ public interface AdminService {
 
     public void delete(Integer id);
 
+    /**
+     * 修改用户密码
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/27 14:07
+     * @param
+     * @return
+     */
+    Result updatePassword(String loginName, String oldPassword, String newPassword);
 }

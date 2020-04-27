@@ -9,6 +9,7 @@ com\qingcheng\controller\order\PreferentialController.class
 com\qingcheng\controller\order\ReturnOrderController.class
 com\qingcheng\controller\system\RoleController.class
 com\qingcheng\controller\file\UploadController.class
+com\qingcheng\controller\system\LoginLogController.class
 com\qingcheng\controller\order\ReturnOrderItemController.class
 com\qingcheng\controller\user\CitiesController.class
 com\qingcheng\controller\order\OrderItemController.class
@@ -19,6 +20,7 @@ com\qingcheng\controller\goods\ParaController.class
 com\qingcheng\controller\user\ProvincesController.class
 com\qingcheng\controller\LoginController.class
 com\qingcheng\controller\goods\AlbumController.class
+com\qingcheng\controller\AuthenticationSuccessHandlerImpl.class
 com\qingcheng\controller\business\ActivityController.class
 com\qingcheng\controller\goods\TemplateController.class
 com\qingcheng\controller\user\AddressController.class

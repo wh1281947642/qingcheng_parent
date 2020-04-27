@@ -3,6 +3,7 @@ F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\goods\AlbumController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\order\OrderLogController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\goods\SpuController.java
+F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\system\LoginLogController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\order\ReturnOrderItemController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\user\CitiesController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\order\PreferentialController.java
@@ -28,6 +29,7 @@ F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\user\UserController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\business\AdController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\system\MenuController.java
+F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\AuthenticationSuccessHandlerImpl.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\order\OrderItemController.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\order\OrderTask.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_web_manager\src\main\java\com\qingcheng\controller\system\AdminController.java

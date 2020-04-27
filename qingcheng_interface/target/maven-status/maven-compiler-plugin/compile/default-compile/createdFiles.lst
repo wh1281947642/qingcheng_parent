@@ -20,6 +20,7 @@ com\qingcheng\service\business\AdService.class
 com\qingcheng\service\business\ActivityService.class
 com\qingcheng\service\goods\SpecService.class
 com\qingcheng\service\system\AdminService.class
+com\qingcheng\service\system\LoginLogService.class
 com\qingcheng\service\user\UserService.class
 com\qingcheng\service\goods\AlbumService.class
 com\qingcheng\service\order\OrderItemService.class

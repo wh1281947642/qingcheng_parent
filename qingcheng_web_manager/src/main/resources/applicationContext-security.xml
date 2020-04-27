@@ -19,7 +19,12 @@
 		<intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')"></intercept-url>
 		<!--当前的工程自动实现表单登录-->
 		<!--<form-login></form-login>-->
-		<form-login login-page="/login.html" default-target-url="/main.html" authentication-failure-url="/login.html"/>
+		<form-login
+				login-page="/login.html"
+				default-target-url="/main.html"
+				authentication-failure-url="/login.html"
+				authentication-success-handler-ref="loginHandler"
+		/>
 		<!--退出登录 /logout post-->
 		<logout/>
 
@@ -45,4 +50,6 @@
 
 	<beans:bean id="bcryptEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"> </beans:bean>
 	<beans:bean id="userDetailsService" class="com.qingcheng.controller.UserDetailsServiceImpl"></beans:bean>
+	<!--登录成功处理器-->
+	<beans:bean id="loginHandler" class="com.qingcheng.controller.AuthenticationSuccessHandlerImpl"></beans:bean>
 </beans:beans>

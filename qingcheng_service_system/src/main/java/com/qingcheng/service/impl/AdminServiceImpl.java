@@ -4,11 +4,14 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.qingcheng.dao.AdminMapper;
 import com.qingcheng.entity.PageResult;
+import com.qingcheng.entity.Result;
 import com.qingcheng.pojo.system.Admin;
 import com.qingcheng.service.system.AdminService;
+import com.qingcheng.util.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.activation.MailcapCommandMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,6 +115,34 @@ public class AdminServiceImpl implements AdminService {
         adminMapper.deleteByPrimaryKey(id);
     }
 
+    /**
+     * 修改用户密码
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/27 14:07
+     * @param
+     * @return
+     */
+    @Override
+    public Result updatePassword(String loginName, String oldPassword, String newPassword){
+        Admin admin = new Admin();
+        admin.setLoginName(loginName);
+        admin.setStatus("1");
+        List<Admin> adminList = adminMapper.select(admin);
+        Admin oldAdmin= adminList.get(0);
+        String password = oldAdmin.getPassword();
+        boolean checkpw = BCrypt.checkpw(oldPassword, password);
+        if(checkpw){
+            //创建随机盐
+            String gensalt = BCrypt.gensalt();
+            String hashpw = BCrypt.hashpw(newPassword, gensalt);
+            oldAdmin.setPassword(hashpw);
+            adminMapper.updateByPrimaryKeySelective(oldAdmin);
+            return new Result(0,"修改成功！");
+        }else{
+            return new Result(1,"原密码输入不正确，请重新输入！");
+        }
+    }
     /**
      * 构建查询条件
      * @param searchMap

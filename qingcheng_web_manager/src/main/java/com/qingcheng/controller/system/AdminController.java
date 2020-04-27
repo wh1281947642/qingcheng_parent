@@ -54,6 +54,20 @@ public class AdminController {
         return new Result();
     }
 
+    /**
+     * 修改密码
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/04/27 14:02
+     * @param
+     * @return 
+     */
+    @PostMapping("/updatePassword")
+    public Result update(String loginName,String oldPassword,String newPassword){
+        Result result = adminService.updatePassword(loginName,oldPassword,newPassword);
+        return result;
+    }
+
     @GetMapping("/delete")
     public Result delete(Integer id){
         adminService.delete(id);
