@@ -9,6 +9,7 @@ import com.qingcheng.service.business.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class AdServiceImpl implements AdService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Ad> findAll() {
         return adMapper.selectAll();
     }
@@ -32,6 +34,7 @@ public class AdServiceImpl implements AdService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Ad> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Ad> ads = (Page<Ad>) adMapper.selectAll();
@@ -43,6 +46,7 @@ public class AdServiceImpl implements AdService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Ad> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return adMapper.selectByExample(example);
@@ -55,6 +59,7 @@ public class AdServiceImpl implements AdService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Ad> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +72,7 @@ public class AdServiceImpl implements AdService {
      * @param id
      * @return
      */
+    @Override
     public Ad findById(Integer id) {
         return adMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +81,7 @@ public class AdServiceImpl implements AdService {
      * 新增
      * @param ad
      */
+    @Override
     public void add(Ad ad) {
         adMapper.insert(ad);
     }
@@ -83,6 +90,7 @@ public class AdServiceImpl implements AdService {
      * 修改
      * @param ad
      */
+    @Override
     public void update(Ad ad) {
         adMapper.updateByPrimaryKeySelective(ad);
     }
@@ -91,8 +99,30 @@ public class AdServiceImpl implements AdService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         adMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 根据位置查询广告列表
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/07 16:24
+     * @param
+     * @return
+     */
+    @Override
+    public List<Ad> findByPosition(String position) {
+        Example example=new Example(Ad.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("position",position);
+        //开始时间小于等于当前时间
+        criteria.andLessThanOrEqualTo("startTime", new Date());
+        //截止时间大于等于当前时间
+        criteria.andGreaterThanOrEqualTo("endTime", new Date());
+        criteria.andEqualTo("status", "1");
+        return adMapper.selectByExample(example);
     }
 
     /**

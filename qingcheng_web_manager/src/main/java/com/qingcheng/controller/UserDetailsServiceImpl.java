@@ -20,7 +20,6 @@ import java.util.Map;
  * <p>
  * <code>UserDetailsService</code>
  * </p>
- *
  * @author huiwang45@iflytek.com
  * @description
  * @date 2020/04/23 14:51
