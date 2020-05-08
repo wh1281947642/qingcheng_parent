@@ -9,6 +9,8 @@ import com.qingcheng.service.goods.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,6 +111,56 @@ public class CategoryServiceImpl implements CategoryService {
             throw new RuntimeException("存在下级分类不能删除");
         }
         categoryMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     *
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/08 14:43
+     * @param
+     * @return 
+     */
+    @Override
+    public List<Map> findCategoryTree(){
+
+        //查询is_show == 1 的记录
+        Example example=new Example(Category.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("isShow", "1");
+        example.setOrderByClause("seq");
+        List<Category> categoryList = this.categoryMapper.selectByExample(example);
+        return findByParentId(categoryList,0);
+    }
+
+    /**
+     *
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/08 15:02
+     * @param
+     * @return
+     */
+    private List<Map> findByParentId(List<Category> categoryList, Integer parentId){
+        List<Map> mapList=new ArrayList<Map>();
+
+       /* categoryList.forEach(category -> {
+            if(category.getParentId().equals(parentId)){
+                Map map =new HashMap();
+                map.put("name", category.getName());
+                map.put("menus", findByParentId(categoryList,category.getParentId()));
+                mapList.add(map);
+            }
+        });*/
+        for(Category category:categoryList){
+            if(category.getParentId().equals(parentId)){
+                Map map =new HashMap();
+                map.put("name",category.getName());
+                map.put("menus",findByParentId(categoryList,category.getId()));
+                mapList.add(map);
+            }
+        }
+        return mapList;
     }
 
     /**

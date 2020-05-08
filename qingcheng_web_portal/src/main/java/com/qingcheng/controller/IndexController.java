@@ -11,6 +11,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>
+ * <code>IndexController</code>
+ * </p>
+ * 
+ * @author huiwang45@iflytek.com
+ * @description
+ * @date 2020/05/08 15:45
+ */
 @Controller
 public class IndexController {
 
@@ -24,15 +33,12 @@ public class IndexController {
     @GetMapping("/index")
     public String index(Model model){
         //得到首页广告轮播图列表
-        List<Ad> lbtList = adService.findByPosition("index_lb");
+        List<Ad> lbtList = adService.findByPosition("web_index_lb");
         model.addAttribute("lbt",lbtList);
 
         //分类导航
-        /*List<Map> categoryList =  categoryService.findCategoryTree();
-        model.addAttribute("categoryList",categoryList);*/
-
+        List<Map> categoryList =  categoryService.findCategoryTree();
+        model.addAttribute("categoryList",categoryList);
         return "index";
     }
-
-
 }
