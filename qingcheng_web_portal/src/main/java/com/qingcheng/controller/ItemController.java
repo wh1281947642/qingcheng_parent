@@ -26,9 +26,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>
+ * <code>ItemController</code>
+ * </p>
+ * 
+ * @author huiwang45@iflytek.com
+ * @description
+ * @date 2020/05/08 17:16
+ */
 @RestController
 @RequestMapping("/item")
 public class ItemController {
+
+    @Value("${pagePath}")
+    private String pagePath;
 
     @Reference
     private SpuService spuService;
@@ -36,13 +48,62 @@ public class ItemController {
     @Reference
     private CategoryService categoryService;
 
-    @Value("${pagePath}")
-    private String pagePath;
-
     @Autowired
     private TemplateEngine templateEngine;
 
+    /**
+     * 创建页面
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/08 16:56
+     * @param spuId
+     * @return
+     */
     @GetMapping("/createPage")
+    public void createPage(String spuId){
+
+        //一.查询商品信息
+        Goods goods = this.spuService.findGoodsById(spuId);
+        //获取spu信息
+        Spu spu = goods.getSpu();
+        //获取sku列表
+        List<Sku> skuList = goods.getSkuList();
+
+        //二.批量生成sku页面
+
+        skuList.forEach(sku -> {
+
+            //1.创建上下文和数据模型
+            Context context = new Context();
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("spu", spu);
+            map.put("sku", sku);
+            context.setVariables(map);
+
+            //2.准备文件
+            File dir = new File(pagePath);
+            if (!dir.exists()){
+                dir.mkdirs();
+            }
+            //生成的目标文件
+            File dest = new File(dir,sku.getId()+".html");
+
+            //3.生成页面
+            PrintWriter printWriter = null;
+            try {
+                printWriter = new PrintWriter(dest, "UTF-8");
+                this.templateEngine.process("item", context,printWriter);
+                System.out.println("生成页面："+sku.getId()+".html");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+   /* @GetMapping("/createPage")
     public void createPage(String spuId){
 
         //1.查询商品信息
@@ -130,10 +191,5 @@ public class ItemController {
                 e.printStackTrace();
             }
         }
-
-
-    }
-
-
-
+    }*/
 }

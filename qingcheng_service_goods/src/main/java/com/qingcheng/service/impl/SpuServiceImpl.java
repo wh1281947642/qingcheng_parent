@@ -238,7 +238,6 @@ public class SpuServiceImpl implements SpuService {
         Goods goods = new Goods();
         goods.setSpu(spu);
         goods.setSkuList(skuList);
-
         return goods;
     }
 
