@@ -1840,10 +1840,11 @@
                         <div class="items">
                             <ul>
                                 <!--/*@thymesVar id="skuImages" type=""*/-->
-                                <li th:each="img:${skuImages}">
+                                <li th:if="${not #lists.isEmpty(skuImages)}" >
                                     <img th:src="${img}" bimg="${img}" onmousemove="preview(this)"/>
                                 </li>
-                                <li th:each="img:${spuImages}">
+
+                                <li  th:each="img:${spuImages}" >
                                     <img th:src="${img}" bimg="${img}" onmousemove="preview(this)"/>
                                 </li>
 

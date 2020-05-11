@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import sun.security.pkcs11.P11Util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -51,6 +53,9 @@ public class ItemController {
     @Autowired
     private TemplateEngine templateEngine;
 
+    public ItemController() {
+    }
+
     /**
      * 创建页面
      * @description
@@ -69,15 +74,76 @@ public class ItemController {
         //获取sku列表
         List<Sku> skuList = goods.getSkuList();
 
-        //二.批量生成sku页面
+        //查询商品分类
+        ArrayList<String> categoryList = new ArrayList<>();
+        //一级分类
+        categoryList.add(this.categoryService.findById(spu.getCategory1Id()).getName());
+        //二级分类
+        categoryList.add(this.categoryService.findById(spu.getCategory2Id()).getName());
+        //三级分类
+        categoryList.add(this.categoryService.findById(spu.getCategory3Id()).getName());
 
+        HashMap<String, String> urlMap = new HashMap<>();
+        //sku地址列表
         skuList.forEach(sku -> {
+            if("1".equals(sku.getStatus())){
+                String jsonString = JSON.toJSONString(JSON.parseObject(sku.getSpec()),SerializerFeature.MapSortField);
+                urlMap.put(jsonString, sku.getId()+".html");
+            }
+        });
 
+        //二.批量生成sku页面
+        skuList.forEach(sku -> {
             //1.创建上下文和数据模型
             Context context = new Context();
             HashMap<String, Object> map = new HashMap<>();
             map.put("spu", spu);
             map.put("sku", sku);
+            map.put("categoryList", categoryList);
+            //sku图片列表
+            map.put("skuImages", sku.getImages().split(","));
+            //spu图片列表
+            map.put("spuImages", spu.getImages().split(","));
+            //参数列表
+            String paraItems = spu.getParaItems();
+            Map paraItemsMap = JSON.parseObject(paraItems);
+            map.put("paraItems", paraItemsMap);
+            //当前sku规格列表
+            String spec = sku.getSpec();
+            Map<String,String> specMap = (Map)JSON.parseObject(spec);
+            System.out.println("specMap" +specMap);
+            map.put("specItems", specMap);
+            //规格和规格选项数据
+            //{"颜色":["金色","黑色","蓝色"],"版本":["6GB+64GB"]}
+            //{"颜色":[{'option':'金色',checked:true},{'option':'黑色',checked:false},"蓝色"],"版本":["6GB+64GB"]}
+            String specItems = spu.getSpecItems();
+            Map<String,List> specItemsMap = (Map)JSON.parseObject(specItems);
+            for(String key :specItemsMap.keySet()){
+                System.out.println(key);
+                List<String> list = specItemsMap.get(key);
+                //新的集合 {"颜色":[{'option':'金色',checked:true},{'option':'黑色',checked:false},"蓝色"],"版本":["6GB+64GB"]}
+                //循环规格选项
+                List<Map> arrayList = list.stream().map(value -> {
+                    HashMap<Object, Object> hashMap = new HashMap<>();
+                    //规格选项
+                    hashMap.put("option", value);
+                    //是否选中 如果和当前sku规格相同，就是选中的
+                    if(specMap.get(key).equals(value)){
+                        hashMap.put("checked", true);
+                    }else {
+                        hashMap.put("checked", false);
+                    }
+                    //当前的sku
+                    Map<String,String> spec1Map = (Map)JSON.parseObject(sku.getSpec());
+                    spec1Map.put(key, value);
+                    String jsonString = JSON.toJSONString(spec1Map,SerializerFeature.MapSortField);
+                    hashMap.put("url", urlMap.get(jsonString));
+                    return hashMap;
+                }).collect(Collectors.toList());
+                //用新的集合替换原有得集合
+                specItemsMap.put(key, arrayList);
+            }
+            map.put("specMap", specItemsMap);
             context.setVariables(map);
 
             //2.准备文件
@@ -192,4 +258,12 @@ public class ItemController {
             }
         }
     }*/
+
+    public static void main(String[] args) {
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("颜色", "黑色");
+        hashMap.put("版本", "8GB+128GB");
+        String jsonString = JSON.toJSONString(hashMap,SerializerFeature.MapSortField);
+        System.out.println(jsonString);
+    }
 }
