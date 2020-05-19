@@ -6,18 +6,35 @@ import com.qingcheng.dao.AdMapper;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.business.Ad;
 import com.qingcheng.service.business.AdService;
+import com.qingcheng.util.CacheKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>
+ * <code>AdServiceImpl</code>
+ * </p>
+ * 
+ * @author huiwang45@iflytek.com
+ * @description
+ * @date 2020/05/19 15:16
+ */
 @Service
 public class AdServiceImpl implements AdService {
 
     @Autowired
     private AdMapper adMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+    
+    
 
     /**
      * 返回全部记录
@@ -84,6 +101,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void add(Ad ad) {
         adMapper.insert(ad);
+        saveAdToRedisByPosition(ad.getPosition());
     }
 
     /**
@@ -92,7 +110,13 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public void update(Ad ad) {
+        //获取之前的广告位置
+        String position = adMapper.selectByPrimaryKey(ad.getId()).getPosition();
+        saveAdToRedisByPosition(position);
         adMapper.updateByPrimaryKeySelective(ad);
+        if(!position.equals(ad.getPosition())){
+            saveAdToRedisByPosition(ad.getPosition());
+        }
     }
 
     /**
@@ -101,7 +125,21 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public void delete(Integer id) {
+        Ad ad = adMapper.selectByPrimaryKey(id);
         adMapper.deleteByPrimaryKey(id);
+        saveAdToRedisByPosition(ad.getPosition());
+    }
+
+    private List<Ad> getAds(String position) {
+        Example example=new Example(Ad.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("position",position);
+        //开始时间小于等于当前时间
+        criteria.andLessThanOrEqualTo("startTime", new Date());
+        //截止时间大于等于当前时间
+        criteria.andGreaterThanOrEqualTo("endTime", new Date());
+        criteria.andEqualTo("status", "1");
+        return adMapper.selectByExample(example);
     }
 
     /**
@@ -114,15 +152,58 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public List<Ad> findByPosition(String position) {
-        Example example=new Example(Ad.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("position",position);
-        //开始时间小于等于当前时间
-        criteria.andLessThanOrEqualTo("startTime", new Date());
-        //截止时间大于等于当前时间
-        criteria.andGreaterThanOrEqualTo("endTime", new Date());
-        criteria.andEqualTo("status", "1");
-        return adMapper.selectByExample(example);
+        //List<Ad> adList = getAds(position);
+        System.out.println("从AdService缓存中提取数据"+position);
+        return (List<Ad>)redisTemplate.boundHashOps(CacheKey.AD).get(position);
+    }
+
+
+
+    /**
+     * 将某个位置的广告存入缓存
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 15:08
+     * @param
+     * @return
+     */
+    @Override
+    public void saveAdToRedisByPosition(String position){
+
+        //根据位置查询广告列表
+        List<Ad> Adlist = getAds(position);
+        redisTemplate.boundHashOps(CacheKey.AD).put(position, Adlist);
+    }
+
+    /**
+     * 返回所有的广告位置
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 15:19
+     * @param
+     * @return
+     */
+    private List<String> getPositionList(){
+        List<String> positionList = new ArrayList<String>();
+        //首页广告轮播图
+        positionList.add("web_index_lb");
+        return positionList;
+    }
+
+    /**
+     * 将全部广告数据存入缓存
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 15:08
+     * @param
+     * @return
+     */
+    @Override
+    public void saveAllAdToRedis (){
+        //循环所有的广告位置
+        getPositionList().forEach(position -> {
+            saveAdToRedisByPosition(position);
+        });
     }
 
     /**

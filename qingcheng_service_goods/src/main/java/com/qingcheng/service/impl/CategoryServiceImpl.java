@@ -99,6 +99,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void add(Category category) {
         categoryMapper.insert(category);
+        //数据修改后重新进行缓存预热
+        saveCategoryTreeToRedis();
     }
 
     /**
@@ -108,6 +110,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void update(Category category) {
         categoryMapper.updateByPrimaryKeySelective(category);
+        saveCategoryTreeToRedis();
     }
 
     /**
@@ -125,6 +128,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new RuntimeException("存在下级分类不能删除");
         }
         categoryMapper.deleteByPrimaryKey(id);
+        saveCategoryTreeToRedis();
     }
 
     /**
@@ -139,8 +143,12 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Map> findCategoryTree(){
 
         //查询is_show == 1 的记录
-        List<Category> categoryList = getCategoryList();
-        return findByParentId(categoryList,0);
+       /* List<Category> categoryList = getCategoryList();
+        return findByParentId(categoryList,0);*/
+
+       //从缓存中提取分类
+        System.out.println("从缓存中提取");
+        return (List<Map>) redisTemplate.boundValueOps(CacheKey.CATEGROY_TREE).get();
     }
 
     private List<Category> getCategoryList() {
@@ -244,7 +252,6 @@ public class CategoryServiceImpl implements CategoryService {
             if(searchMap.get("templateId")!=null ){
                 criteria.andEqualTo("templateId",searchMap.get("templateId"));
             }
-
         }
         return example;
     }

@@ -1,2 +1,3 @@
 com\qingcheng\util\BCrypt.class
 com\qingcheng\util\IdWorker.class
+com\qingcheng\util\CacheKey.class
