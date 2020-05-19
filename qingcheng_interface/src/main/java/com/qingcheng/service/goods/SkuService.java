@@ -32,4 +32,37 @@ public interface SkuService {
 
     public void delete(String id);
 
+    public void saveAllPriceToRedis();
+
+    /**
+     * 根据sku id查询价格
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 17:19
+     * @param
+     * @return
+     */
+    public Integer findPrice(String id);
+
+    /**
+     * 根据skuid跟新商品价格
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 19:02
+     * @param
+     * @return
+     */
+    public void savePriceToRedisById(String id,Integer price);
+
+    /**
+     * 根据sku id 删除商品价格缓存
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 19:08
+     * @param
+     * @return
+     */
+    public void deletePriceFromRedis(String id);
+
+
 }

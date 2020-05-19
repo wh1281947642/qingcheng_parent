@@ -1,6 +1,7 @@
 package com.qingcheng.service.impl;
 
 import com.qingcheng.service.goods.CategoryService;
+import com.qingcheng.service.goods.SkuService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,16 +16,20 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class CategoryInit implements InitializingBean {
+public class goodsInit implements InitializingBean {
 
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private SkuService skuService;
+
+
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        System.out.println("---CategoryService:缓存预热-----");
+        System.out.println("---goodsInit:缓存预热-----");
         categoryService.saveCategoryTreeToRedis();
-
+        skuService.saveAllPriceToRedis();
     }
 }

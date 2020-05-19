@@ -6,22 +6,37 @@ import com.qingcheng.dao.SkuMapper;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.goods.Sku;
 import com.qingcheng.service.goods.SkuService;
+import com.qingcheng.util.CacheKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>
+ * <code>SkuServiceImpl</code>
+ * </p>
+ * 
+ * @author huiwang45@iflytek.com
+ * @description
+ * @date 2020/05/19 16:59
+ */
 @Service
 public class SkuServiceImpl implements SkuService {
 
     @Autowired
     private SkuMapper skuMapper;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Sku> findAll() {
         return skuMapper.selectAll();
     }
@@ -32,6 +47,7 @@ public class SkuServiceImpl implements SkuService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Sku> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Sku> skus = (Page<Sku>) skuMapper.selectAll();
@@ -43,6 +59,7 @@ public class SkuServiceImpl implements SkuService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Sku> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return skuMapper.selectByExample(example);
@@ -55,6 +72,7 @@ public class SkuServiceImpl implements SkuService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Sku> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +85,7 @@ public class SkuServiceImpl implements SkuService {
      * @param id
      * @return
      */
+    @Override
     public Sku findById(String id) {
         return skuMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +94,7 @@ public class SkuServiceImpl implements SkuService {
      * 新增
      * @param sku
      */
+    @Override
     public void add(Sku sku) {
         skuMapper.insert(sku);
     }
@@ -83,6 +103,7 @@ public class SkuServiceImpl implements SkuService {
      * 修改
      * @param sku
      */
+    @Override
     public void update(Sku sku) {
         skuMapper.updateByPrimaryKeySelective(sku);
     }
@@ -91,8 +112,67 @@ public class SkuServiceImpl implements SkuService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(String id) {
         skuMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public void saveAllPriceToRedis(){
+
+        if (!redisTemplate.hasKey(CacheKey.SKU_PRICE)){
+            System.out.println("商品价格缓存预热");
+            //查询所有的商品的价格
+            List<Sku> skuList = skuMapper.selectAll();
+            skuList.forEach(sku -> {
+                if ("1".equals(sku.getStatus())){
+                    //放入缓存
+                    redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put(sku.getId(), sku.getPrice());
+                }
+            });
+        }else {
+            System.out.println("已存在价格，跳过缓存预热");
+        }
+    }
+
+
+    /**
+     * 根据sku id查询价格
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 17:19
+     * @param
+     * @return
+     */
+    @Override
+    public Integer findPrice(String id){
+        return  (Integer)redisTemplate.boundHashOps(CacheKey.SKU_PRICE).get(id);
+    }
+
+    /**
+     * 根据skuid跟新商品价格
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 19:02
+     * @param
+     * @return
+     */
+    @Override
+    public void savePriceToRedisById(String id,Integer price){
+        redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put(id, price);
+    }
+
+    /**
+     * 根据sku id 删除商品价格缓存
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/19 19:08
+     * @param
+     * @return
+     */
+    @Override
+    public void deletePriceFromRedis(String id){
+        redisTemplate.boundHashOps(CacheKey.SKU_PRICE).delete(id);
     }
 
     /**
