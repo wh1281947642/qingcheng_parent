@@ -6,7 +6,9 @@ import com.qingcheng.dao.CategoryMapper;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.goods.Category;
 import com.qingcheng.service.goods.CategoryService;
+import com.qingcheng.util.CacheKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
@@ -14,11 +16,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>
+ * <code>CategoryServiceImpl</code>
+ * </p>
+ * 
+ * @author huiwang45@iflytek.com
+ * @description
+ * @date 2020/05/18 17:36
+ */
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 返回全部记录
@@ -125,12 +139,16 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Map> findCategoryTree(){
 
         //查询is_show == 1 的记录
+        List<Category> categoryList = getCategoryList();
+        return findByParentId(categoryList,0);
+    }
+
+    private List<Category> getCategoryList() {
         Example example=new Example(Category.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("isShow", "1");
         example.setOrderByClause("seq");
-        List<Category> categoryList = this.categoryMapper.selectByExample(example);
-        return findByParentId(categoryList,0);
+        return this.categoryMapper.selectByExample(example);
     }
 
     /**
@@ -161,6 +179,27 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
         return mapList;
+    }
+
+    /**
+     * 查询商品分类 并存入redis
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/18 17:39
+     * @param
+     * @return
+     */
+    @Override
+    public void saveCategoryTreeToRedis(){
+
+        //查询商品分类导航
+
+        //查询is_show == 1 的记录
+        List<Category> categoryList = getCategoryList();
+        List<Map> categoryTree = findByParentId(categoryList, 0);
+
+        //存入redis
+        redisTemplate.boundValueOps(CacheKey.CATEGROY_TREE).set(categoryTree);
     }
 
     /**
