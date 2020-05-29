@@ -54,10 +54,10 @@
 					</div>
 					<div class="yui3-u Rit searchArea">
 						<div class="search">
-							<form action="" class="sui-form form-inline">
+							<form action="/search.do" class="sui-form form-inline">
 								<!--searchAutoComplete-->
 								<div class="input-append">
-									<input type="text" id="autocomplete"   class="input-error input-xxlarge" />
+									<input type="text" id="autocomplete"  name="keywords"  class="input-error input-xxlarge" />
 									<button class="sui-btn btn-xlarge btn-danger" >搜索</button>
 								</div>
 							</form>
@@ -471,18 +471,24 @@
 					</li>					
 				</ul>
 				<ul class="fl sui-tag">
-					<li class="with-x">iphone<i>×</i></li>
+					<li class="with-x" th:if="${#maps.containsKey(searchMap,'category')}">
+                        <span th:text="${'商品分类:'+searchMap.category}">
+                        </span>
+                        <i>
+                            <a th:href="${#strings.replace(url,'&category='+searchMap.category,'')}">×</a>
+                        </i>
+                    </li>
 					<li class="with-x">华为<i>×</i></li>
 					<li class="with-x">OPPO<i>×</i></li>
 				</ul>				
 			</div>
 			<!--selector-->
 			<div class="clearfix selector">
-				<div class="type-wrap">
+				<div class="type-wrap" th:if="!${#maps.containsKey(searchMap,'category')}">
 					<div class="fl key">商品分类</div>
-					<div class="fl value">
+					<div class="fl value" th:each="category:${result.categoryList}">
 						<span>
-							<a href="">手机</a>  <a href="">电视</a>
+							<a th:href="${url+'&category='+category}" th:text="${category}">手机</a>
 						</span>
 					</div>
 					<div class="fl ext"></div>

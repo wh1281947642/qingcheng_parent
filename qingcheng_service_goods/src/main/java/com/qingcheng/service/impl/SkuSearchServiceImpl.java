@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -64,9 +65,18 @@ public class SkuSearchServiceImpl implements SkuSearchService {
         //1.1关键字搜索
         MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", searchMap.get("keywords"));
         boolQueryBuilder.must(matchQueryBuilder);
+        //1.2商品分类的过滤
+        if (searchMap.get("category")!=null){
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("categoryName", searchMap.get("category"));
+            boolQueryBuilder.filter(termQueryBuilder);
+        }
 
         searchSourceBuilder.query(boolQueryBuilder);
         searchRequest.source(searchSourceBuilder);
+
+        //商品分类（聚合查询）
+        TermsAggregationBuilder termsAggregationBuilder = AggregationBuilders.terms("sku_category").field("categoryName");
+        searchSourceBuilder.aggregation(termsAggregationBuilder);
 
 
         HashMap<String, Object> resultMap = new HashMap<>();
@@ -81,13 +91,18 @@ public class SkuSearchServiceImpl implements SkuSearchService {
             ArrayList<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
             for (SearchHit hit : hits) {
                 String source = hit.getSourceAsString();
-                System.out.println(source);
                 Map<String, Object> skuMap = hit.getSourceAsMap();
-                System.out.println(skuMap);
                 resultList.add(skuMap);
             }
-            System.out.println(resultList);
             resultMap.put("rows", resultList);
+
+            //2.2商品分类列表
+            Aggregations aggregations = searchResponse.getAggregations();
+            Map<String, Aggregation> map = aggregations.getAsMap();
+            Terms terms = (Terms)map.get("sku_category");
+            List<? extends Terms.Bucket> buckets = terms.getBuckets();
+            List<String> categoryList = buckets.stream().map(bucket -> bucket.getKeyAsString()).collect(Collectors.toList());
+            resultMap.put("categoryList", categoryList);
 
         } catch (IOException e) {
             e.printStackTrace();

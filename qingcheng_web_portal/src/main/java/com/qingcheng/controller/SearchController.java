@@ -36,6 +36,15 @@ public class SearchController {
         Map result = skuSearchService.search(searchMap);
         System.out.println(result);
         model.addAttribute("result",result);
+
+        //url处理
+        StringBuffer url =new StringBuffer("/search.do?");
+        for (String key : searchMap.keySet()) {
+            url.append("&"+key+"="+searchMap.get(key));
+        }
+        model.addAttribute("url",url);
+
+        model.addAttribute("searchMap",searchMap);
         return "search";
     }
 }

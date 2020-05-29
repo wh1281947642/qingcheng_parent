@@ -1,7 +1,12 @@
 package com.qingcheng.dao;
 
 import com.qingcheng.pojo.goods.Brand;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import tk.mybatis.mapper.common.Mapper;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -14,4 +19,18 @@ import tk.mybatis.mapper.common.Mapper;
  */
 public interface BrandMapper extends Mapper<Brand> {
 
+    /**
+     * 根据商品分类名称查询品牌列表
+     * @description TODO
+     * @author huiwang45@iflytek.com
+     * @date 2020/05/29 17:23
+     * @param
+     * @return 
+     */
+    @Select("SELECT b.name,b.image " +
+            "FROM tb_brand b " +
+            "LEFT JOIN tb_category_brand cb ON cb.brand_id = b.id " +
+            "LEFT JOIN tb_category c ON c.id = cb.category_id " +
+            "WHERE c.name =#{name}")
+    public List<Map> findListByCategoryName(@Param("name") String categoryName);
 }
