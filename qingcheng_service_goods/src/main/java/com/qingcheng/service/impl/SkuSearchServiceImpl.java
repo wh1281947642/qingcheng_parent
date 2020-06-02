@@ -89,6 +89,7 @@ public class SkuSearchServiceImpl implements SkuSearchService {
             }
         }
 
+        //1.5价格筛选
         if (!StringUtils.isEmpty(searchMap.get("price"))){
             String[] prices = searchMap.get("price").split("-");
             //最低价格不等于0
@@ -102,9 +103,6 @@ public class SkuSearchServiceImpl implements SkuSearchService {
                 boolQueryBuilder.filter(rangeQueryBuilder);
             }
         }
-
-        //1.5价格筛选
-
 
         searchSourceBuilder.query(boolQueryBuilder);
         searchRequest.source(searchSourceBuilder);
