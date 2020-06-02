@@ -22,6 +22,8 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -65,11 +67,20 @@ public class SkuSearchServiceImpl implements SkuSearchService {
         //1.1关键字搜索
         MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", searchMap.get("keywords"));
         boolQueryBuilder.must(matchQueryBuilder);
+
         //1.2商品分类的过滤
-        if (searchMap.get("category")!=null){
+        if (!StringUtils.isEmpty(searchMap.get("category"))){
             TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("categoryName", searchMap.get("category"));
             boolQueryBuilder.filter(termQueryBuilder);
         }
+
+        //1.3品牌的过滤
+        if (!StringUtils.isEmpty(searchMap.get("brand"))){
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("brandName", searchMap.get("brand"));
+            boolQueryBuilder.filter(termQueryBuilder);
+        }
+
+
 
         searchSourceBuilder.query(boolQueryBuilder);
         searchRequest.source(searchSourceBuilder);
@@ -104,6 +115,23 @@ public class SkuSearchServiceImpl implements SkuSearchService {
             List<String> categoryList = buckets.stream().map(bucket -> bucket.getKeyAsString()).collect(Collectors.toList());
             resultMap.put("categoryList", categoryList);
 
+            //2.3 品牌列表
+            if (!StringUtils.isEmpty(searchMap.get("brand"))){
+                //分类名称
+                String categoryName = "";
+                //如果没有分类的信息,取分类列表第一个列表
+                if (StringUtils.isEmpty(searchMap.get("category"))){
+                    if (!CollectionUtils.isEmpty(categoryList)){
+                        categoryName =  categoryList.get(0);
+                    }
+                }else {
+                    //取出参数中的分类
+                    categoryName = searchMap.get("category");
+                }
+                //查询品牌列表
+                List<Map> brandList = this.brandMapper.findListByCategoryName(categoryName);
+                resultMap.put("brandList", brandList);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

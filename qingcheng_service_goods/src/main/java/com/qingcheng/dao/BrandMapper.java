@@ -21,7 +21,7 @@ public interface BrandMapper extends Mapper<Brand> {
 
     /**
      * 根据商品分类名称查询品牌列表
-     * @description TODO
+     * @description
      * @author huiwang45@iflytek.com
      * @date 2020/05/29 17:23
      * @param
@@ -31,6 +31,6 @@ public interface BrandMapper extends Mapper<Brand> {
             "FROM tb_brand b " +
             "LEFT JOIN tb_category_brand cb ON cb.brand_id = b.id " +
             "LEFT JOIN tb_category c ON c.id = cb.category_id " +
-            "WHERE c.name =#{name}")
+            "WHERE c.name =#{name} ORDER BY b.seq")
     public List<Map> findListByCategoryName(@Param("name") String categoryName);
 }
