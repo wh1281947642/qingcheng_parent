@@ -80,6 +80,30 @@ public class SkuSearchServiceImpl implements SkuSearchService {
             boolQueryBuilder.filter(termQueryBuilder);
         }
 
+        //1.4规格过滤
+        for (String key : searchMap.keySet()) {
+            if (key.startsWith("spec.")){
+                //如果是规格参数
+                TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery(key+".keyword", searchMap.get(key));
+                boolQueryBuilder.filter(termQueryBuilder);
+            }
+        }
+
+        if (!StringUtils.isEmpty(searchMap.get("price"))){
+            String[] prices = searchMap.get("price").split("-");
+            //最低价格不等于0
+            if (!"0".equals(prices[0])){
+                RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("price").gte(prices[0]);
+                boolQueryBuilder.filter(rangeQueryBuilder);
+            }
+            //如果价格有上限
+            if (!"*".equals(prices[1])){
+                RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("price").lte(prices[1]);
+                boolQueryBuilder.filter(rangeQueryBuilder);
+            }
+        }
+
+        //1.5价格筛选
 
 
         searchSourceBuilder.query(boolQueryBuilder);
@@ -88,7 +112,6 @@ public class SkuSearchServiceImpl implements SkuSearchService {
         //商品分类（聚合查询）
         TermsAggregationBuilder termsAggregationBuilder = AggregationBuilders.terms("sku_category").field("categoryName");
         searchSourceBuilder.aggregation(termsAggregationBuilder);
-
 
         HashMap<String, Object> resultMap = new HashMap<>();
         try {
@@ -115,23 +138,34 @@ public class SkuSearchServiceImpl implements SkuSearchService {
             List<String> categoryList = buckets.stream().map(bucket -> bucket.getKeyAsString()).collect(Collectors.toList());
             resultMap.put("categoryList", categoryList);
 
-            //2.3 品牌列表
-            if (!StringUtils.isEmpty(searchMap.get("brand"))){
-                //分类名称
-                String categoryName = "";
-                //如果没有分类的信息,取分类列表第一个列表
-                if (StringUtils.isEmpty(searchMap.get("category"))){
-                    if (!CollectionUtils.isEmpty(categoryList)){
-                        categoryName =  categoryList.get(0);
-                    }
-                }else {
-                    //取出参数中的分类
-                    categoryName = searchMap.get("category");
+            //分类名称
+            String categoryName = "";
+            //如果没有分类的信息,取分类列表第一个列表
+            if (StringUtils.isEmpty(searchMap.get("category"))){
+                if (!CollectionUtils.isEmpty(categoryList)){
+                    categoryName =  categoryList.get(0);
                 }
+            }else {
+                //取出参数中的分类
+                categoryName = searchMap.get("category");
+            }
+
+            //2.3 品牌列表
+            if (StringUtils.isEmpty(searchMap.get("brand"))){
                 //查询品牌列表
                 List<Map> brandList = this.brandMapper.findListByCategoryName(categoryName);
                 resultMap.put("brandList", brandList);
             }
+
+            //2.4规格列表
+            List<Map> specList = this.specMapper.findListByCategoryName(categoryName);
+            specList.forEach(spec->{
+                //规格选项列表
+                String[] options = ((String) spec.get("options")).split(",");
+                spec.put("options", options);
+            });
+            resultMap.put("specList", specList);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
