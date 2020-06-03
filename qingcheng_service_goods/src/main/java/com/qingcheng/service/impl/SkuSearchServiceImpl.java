@@ -105,6 +105,31 @@ public class SkuSearchServiceImpl implements SkuSearchService {
         }
 
         searchSourceBuilder.query(boolQueryBuilder);
+
+        //分页
+        //页码
+        Integer pageNo = Integer.parseInt(searchMap.get("pageNo"));
+        //页大小
+        Integer pageSize = 30;
+        //计算开始索引
+        int fromIndex = (pageNo - 1) * pageSize;
+        //开始索引设置
+        searchSourceBuilder.from(fromIndex);
+        //每页记录数设置
+        searchSourceBuilder.size(pageSize);
+
+        //排序
+        String sort = searchMap.get("sort");//排序字段
+        String sortOrder = searchMap.get("sortOrder");//排序规则
+        if(!"".equals(sort)){
+            searchSourceBuilder.sort(sort, SortOrder.valueOf(sortOrder));
+        }
+
+        //设置高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("name").preTags("<font style='color:red'>").postTags("</font>");
+        searchSourceBuilder.highlighter(highlightBuilder);
+
         searchRequest.source(searchSourceBuilder);
 
         //商品分类（聚合查询）
@@ -124,6 +149,13 @@ public class SkuSearchServiceImpl implements SkuSearchService {
             for (SearchHit hit : hits) {
                 String source = hit.getSourceAsString();
                 Map<String, Object> skuMap = hit.getSourceAsMap();
+                //高亮处理
+                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+                HighlightField name = highlightFields.get("name");
+                Text[] fragments = name.fragments();
+                String s = fragments[0].toString();
+                //用高亮的内容替换原来的内容
+                skuMap.put("name", s);
                 resultList.add(skuMap);
             }
             resultMap.put("rows", resultList);
@@ -163,6 +195,13 @@ public class SkuSearchServiceImpl implements SkuSearchService {
                 spec.put("options", options);
             });
             resultMap.put("specList", specList);
+
+            //2.5 页码
+            //总记录数
+            long totalCount = searchHits.getTotalHits();
+            //总页数
+            long pageCount = (totalCount%pageSize == 0)? totalCount/pageSize :(totalCount/pageSize+1);
+            resultMap.put("totalPages", pageCount);
 
         } catch (IOException e) {
             e.printStackTrace();
