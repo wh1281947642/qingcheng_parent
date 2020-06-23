@@ -42,4 +42,15 @@ public interface UserService {
      */
     public void sendSms(String phone);
 
+    /**
+     * 增加
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/06/23 09:24
+     * @param user 用户
+     * @param smsCode 验证码
+     * @return
+     */
+    public void add(User user,String smsCode);
+
 }

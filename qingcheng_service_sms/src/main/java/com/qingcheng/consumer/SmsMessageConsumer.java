@@ -21,13 +21,16 @@ public class SmsMessageConsumer implements MessageListener {
     @Value("${param}")
     private String param;
 
+    @Override
     public void onMessage(Message message) {
 
         String jsonString = new String(message.getBody());
         Map<String,String> map = JSON.parseObject(jsonString, Map.class);
 
-        String phone = map.get("phone");//手机号
-        String code = map.get("code");//验证码
+        //手机号
+        String phone = map.get("phone");
+        //验证码
+        String code = map.get("code");
         System.out.println("手机号："+phone+" 验证码："+code);
 
         //调用阿里云通信。。。

@@ -34,7 +34,7 @@ public class SmsUtil {
         request.setAction("SendSms");
         request.putQueryParameter("RegionId", "cn-hangzhou");
         request.putQueryParameter("PhoneNumbers", phone);
-        request.putQueryParameter("SignName", "青橙");
+        request.putQueryParameter("SignName", "乐优商城");
         request.putQueryParameter("TemplateCode", smsCode);
         request.putQueryParameter("TemplateParam", param);
         try {

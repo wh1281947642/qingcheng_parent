@@ -28,15 +28,22 @@ public class UserController {
         return new Result();
     }
 
-   /* @PostMapping("/save")
+    /**
+     *
+     *
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/06/23 09:58
+     * @param
+     * @return
+     */
+    @PostMapping("/save")
     public Result save(@RequestBody User user , String smsCode ){
         //密码加密
         BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
         String newpassword = encoder.encode(user.getPassword());
         user.setPassword(newpassword);
-
         userService.add(user,smsCode);
         return new Result();
-    }*/
-
+    }
 }

@@ -10,12 +10,10 @@ import com.qingcheng.service.user.UserService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -224,7 +222,53 @@ public class UserServiceImpl implements UserService {
         hashMap.put("code", code+"");
 
         rabbitTemplate.convertAndSend("", "queue.sms", JSON.toJSONString(hashMap));
-
     }
 
+    /**
+     * 增加
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/06/23 09:26
+     * @param
+     * @return
+     */
+    @Override
+    public void add(User user, String smsCode) {
+
+        //1.校验
+        //提取系统的验证码
+        String sysCode = (String)redisTemplate.boundValueOps("code_" + user.getPhone()).get();
+        if (StringUtils.isEmpty(sysCode)){
+            throw new RuntimeException("验证码未发送或已过期");
+        }
+        if (!sysCode.equals(smsCode)){
+            throw new RuntimeException("验证码不正确");
+        }
+        if (StringUtils.isEmpty(user.getUsername())){
+            //把手机号作为用户名
+            user.setUsername(user.getPhone());
+        }
+        
+        //校验用户名是否注册
+        User searchUser = new User();
+        searchUser.setUsername(user.getUsername());
+        if (userMapper.selectCount(searchUser)>0){
+            throw new RuntimeException("该手机号已经注册");
+        }
+
+        //2.数据添加
+        //用户的创建时间
+        user.setCreated(new Date());
+        //用户的修改时间
+        user.setUpdated(new Date());
+        //积分数
+        user.setPoints(0);
+        //状态
+        user.setStatus("1");
+        //邮箱验证
+        user.setIsEmailCheck("0");
+        //手机验证
+        user.setIsMobileCheck("0");
+        userMapper.insert(user);
+    }
 }
