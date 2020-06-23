@@ -1,16 +1,22 @@
 package com.qingcheng.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.qingcheng.dao.UserMapper;
 import com.qingcheng.entity.PageResult;
 import com.qingcheng.pojo.user.User;
 import com.qingcheng.service.user.UserService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,10 +24,17 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     /**
      * 返回全部记录
      * @return
      */
+    @Override
     public List<User> findAll() {
         return userMapper.selectAll();
     }
@@ -32,6 +45,7 @@ public class UserServiceImpl implements UserService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<User> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<User> users = (Page<User>) userMapper.selectAll();
@@ -43,6 +57,7 @@ public class UserServiceImpl implements UserService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<User> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return userMapper.selectByExample(example);
@@ -55,6 +70,7 @@ public class UserServiceImpl implements UserService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<User> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +83,7 @@ public class UserServiceImpl implements UserService {
      * @param username
      * @return
      */
+    @Override
     public User findById(String username) {
         return userMapper.selectByPrimaryKey(username);
     }
@@ -75,6 +92,7 @@ public class UserServiceImpl implements UserService {
      * 新增
      * @param user
      */
+    @Override
     public void add(User user) {
         userMapper.insert(user);
     }
@@ -83,6 +101,7 @@ public class UserServiceImpl implements UserService {
      * 修改
      * @param user
      */
+    @Override
     public void update(User user) {
         userMapper.updateByPrimaryKeySelective(user);
     }
@@ -91,6 +110,7 @@ public class UserServiceImpl implements UserService {
      *  删除
      * @param username
      */
+    @Override
     public void delete(String username) {
         userMapper.deleteByPrimaryKey(username);
     }
@@ -172,6 +192,39 @@ public class UserServiceImpl implements UserService {
 
         }
         return example;
+    }
+
+    /**
+     * 发送短信验证码
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/06/22 16:21
+     * @param
+     * @return
+     */
+    @Override
+    public void sendSms(String phone){
+        //1.生成6位的短信验证码
+        Random random = new Random();
+        int code = random.nextInt(999999);
+        //位数处理
+        if (code<100000){
+            code = code +100000;
+        }
+        System.out.println("短信验证码:"+ code);
+
+        //2.将验证码保存到redis中
+        redisTemplate.boundValueOps("code_" +phone).set(code+"");
+        //过期时间 5分钟
+        redisTemplate.boundValueOps("code_" +phone).expire(5, TimeUnit.MINUTES);
+
+        //3.将验证码发送到mq
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("phone", phone);
+        hashMap.put("code", code+"");
+
+        rabbitTemplate.convertAndSend("", "queue.sms", JSON.toJSONString(hashMap));
+
     }
 
 }

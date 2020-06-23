@@ -19,6 +19,7 @@
         <module>qingcheng_service_order</module>
         <module>qingcheng_service_system</module>
         <module>qingcheng_service_user</module>
+        <module>qingcheng_service_sms</module>
         <module>qingcheng_web_manager</module>
         <module>qingcheng_web_portal</module>
     </modules>

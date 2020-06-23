@@ -32,4 +32,14 @@ public interface UserService {
 
     public void delete(String username);
 
+    /**
+     * 发送短信验证码
+     * @description
+     * @author huiwang45@iflytek.com
+     * @date 2020/06/22 16:19
+     * @param
+     * @return
+     */
+    public void sendSms(String phone);
+
 }
