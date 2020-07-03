@@ -12,6 +12,7 @@ com\qingcheng\service\user\AddressService.class
 com\qingcheng\service\goods\BrandService.class
 com\qingcheng\service\order\OrderConfigService.class
 com\qingcheng\service\order\OrderService.class
+com\qingcheng\service\order\CartService.class
 com\qingcheng\service\goods\SkuService.class
 com\qingcheng\service\order\OrderLogService.class
 com\qingcheng\service\goods\SpuService.class

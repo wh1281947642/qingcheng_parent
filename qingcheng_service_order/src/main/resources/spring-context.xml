@@ -28,10 +28,12 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
             <list>
                 <value>classpath:config/jdbc.properties</value>
                 <value>classpath:config/dubbo.properties</value>
+                <value>classpath:config/redis-config.properties</value>
             </list>
         </property>
     </bean>
 
     <import resource="classpath:applicationContext-order-dao.xml"/>
     <import resource="classpath:applicationContext-order-dubbo.xml"/>
+    <import resource="classpath:applicationContext-redis.xml"/>
 </beans>

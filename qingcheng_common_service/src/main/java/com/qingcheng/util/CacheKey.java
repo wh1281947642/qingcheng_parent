@@ -24,6 +24,13 @@ public enum CacheKey {
     /**
      *分类
      */
-    CATEGROY_TREE;
-
+    CATEGROY_TREE,
+    /**
+     *分类
+     */
+    CATEGROY,
+    /**
+     *购物车
+     */
+    CART_LIST;
 }
