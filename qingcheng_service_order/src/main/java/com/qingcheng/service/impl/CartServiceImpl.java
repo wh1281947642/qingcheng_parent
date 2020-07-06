@@ -9,6 +9,7 @@ import com.qingcheng.service.goods.CategoryService;
 import com.qingcheng.service.goods.SkuService;
 import com.qingcheng.service.order.CartService;
 import com.qingcheng.util.CacheKey;
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -44,6 +45,7 @@ public class CartServiceImpl implements CartService {
     public List<Map<String, Object>> findCartList(String username) {
         System.out.println("从redis中提取购物车"+username);
         List<Map<String, Object>>  cartList = (List<Map<String, Object>>)redisTemplate.boundHashOps(CacheKey.CART_LIST).get(username);
+        System.out.println(cartList);
         if (CollectionUtils.isEmpty(cartList)){
             cartList = new ArrayList<>();
         }
@@ -54,10 +56,13 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void addItem(String username, String skuId, Integer num) {
+        System.out.println("skuId:"+skuId);
+        System.out.println("添加购物车");
        //实现思路: 遍历购物车，如果购物车中存在该商品则累加，如果不存在则添加购物车
 
         //获取购物车
         List<Map<String, Object>> cartList = this.findCartList(username);
+        System.out.println(cartList);
         //是否在购物车中存在
         //AtomicBoolean flag = new AtomicBoolean(false);
         boolean flag = false;
@@ -96,11 +101,14 @@ public class CartServiceImpl implements CartService {
         }
 
         //购物车中不存在改商品
-        if (flag = false){
+        if (flag == false){
             Sku sku = this.skuService.findById(skuId);
+            System.out.println("sku:"+sku);
             if (sku == null){
                 throw new RuntimeException("商品不存在");
             }
+            System.out.println("sku.getId():"+sku.getId());
+            System.out.println("sku.getStatus():"+sku.getStatus());
             if (!"1".equals(sku.getStatus())){
                 throw new RuntimeException("商品状态不合法");
             }
@@ -154,6 +162,7 @@ public class CartServiceImpl implements CartService {
 
         //覆盖之前的信息
         redisTemplate.boundHashOps(CacheKey.CART_LIST).put(username, cartList);
+        System.out.println("最终cartList："+cartList);
     }
 
 
