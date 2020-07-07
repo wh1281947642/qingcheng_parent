@@ -15,9 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
 
+import javax.swing.plaf.PanelUI;
 import java.text.BreakIterator;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -167,34 +169,39 @@ public class CartServiceImpl implements CartService {
 
 
 
-    /*
+
     @Override
     public boolean updateChecked(String username, String skuId, boolean checked) {
 
-        List<Map<String, Object>> cartList = findCartList(username);
-        boolean isOk=false;
-        for( Map map:cartList){
-            OrderItem orderItem=(OrderItem)map.get("item");
-            if( orderItem.getSkuId().equals( skuId)){
-                map.put("checked",checked);
+        //查询购物车
+        List<Map<String, Object>> cartList = this.findCartList(username);
+        boolean isOk = false;
+        for (Map<String, Object> map : cartList) {
+            OrderItem orderItem = (OrderItem)map.get("item");
+            if (orderItem.getSkuId().equals(skuId)){
+                map.put("checked", checked);
                 isOk=true;
                 break;
             }
         }
-        if(isOk){
-            redisTemplate.boundHashOps(CacheKey.CART_LIST).put(username,cartList);
+        if (isOk){
+            redisTemplate.boundHashOps(CacheKey.CART_LIST).put(username, cartList);
         }
-        return isOk;
+        return  isOk;
     }
 
     @Override
     public void deleteCheckedCart(String username) {
+        //删除选中的购物车
+        List<Map<String, Object>> cartList = this.findCartList(username);
         //获得未选中的购物车
-        List<Map<String, Object>> cartList = findCartList(username).stream().filter(cart -> (boolean) cart.get("checked") == false)
-                .collect(Collectors.toList());
-        redisTemplate.boundHashOps(CacheKey.CART_LIST).put(username,cartList);
+        List<Map<String, Object>> cartListNew = cartList.stream().filter(map -> (Boolean) map.get("checked") == false).collect(Collectors.toList());
+
+        redisTemplate.boundHashOps(CacheKey.CART_LIST).put(username, cartListNew);
+
     }
 
+    /*
     @Autowired
     private PreferentialService preferentialService;
 

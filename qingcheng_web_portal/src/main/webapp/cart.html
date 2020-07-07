@@ -423,7 +423,9 @@
 		data(){
 		    return {
 		        cartList:[],
+				//累加的数量
 				totalNum:0,
+				//累加的金额
 				totalMoney:0,
 				preferential:0//优惠金额
 			}
@@ -449,6 +451,7 @@
 				})
 			},
 			count(){
+		        //清0
 		        this.totalNum=0;
 		        this.totalMoney=0;
 		        for(let i=0;i<this.cartList.length;i++){

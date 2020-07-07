@@ -44,15 +44,12 @@ public class CartController {
         return  new Result();
     }
 
-
-    /*
     @GetMapping("/buy")
     public void buy(HttpServletResponse response,String skuId,Integer num) throws IOException {
         String username=SecurityContextHolder.getContext().getAuthentication().getName();
         cartService.addItem(username,skuId,num);
         response.sendRedirect("/cart.html");
     }
-
 
     @GetMapping("/updateChecked")
     public Result updateChecked(String skuId,boolean checked){
@@ -61,11 +58,10 @@ public class CartController {
         return new Result();
     }
 
-
-    *//**
+    /**
      * 删除选中的购物车
      * @return
-     *//*
+     */
     @GetMapping("/deleteCheckedCart")
     public Result deleteCheckedCart(){
         String username=SecurityContextHolder.getContext().getAuthentication().getName();
@@ -73,7 +69,7 @@ public class CartController {
         return new Result();
     }
 
-    *//**
+    /*//**
      * 计算当前购物车优惠金额
      * @return
      *//*

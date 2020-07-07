@@ -24,23 +24,23 @@ public interface CartService {
      */
     public void addItem(String username, String skuId, Integer num);
 
-    /*//**
+   /**
      * 更新选中状态
      * @param username
      * @param skuId
      * @param checked
      * @return
-     *//*
+     */
     public boolean updateChecked(String username, String skuId, boolean checked);
 
 
-    *//**
+    /**
      * 删除选中的购物车
      * @param username
-     *//*
+     */
     public void deleteCheckedCart(String username);
 
-    *//**
+    /*//**
      * 计算购物车的优惠金额
      * @param username
      * @return
