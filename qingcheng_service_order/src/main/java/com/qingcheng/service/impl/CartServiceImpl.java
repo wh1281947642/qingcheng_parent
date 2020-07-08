@@ -8,6 +8,7 @@ import com.qingcheng.pojo.order.OrderItem;
 import com.qingcheng.service.goods.CategoryService;
 import com.qingcheng.service.goods.SkuService;
 import com.qingcheng.service.order.CartService;
+import com.qingcheng.service.order.PreferentialService;
 import com.qingcheng.util.CacheKey;
 import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import org.springframework.beans.BeanUtils;
@@ -41,6 +42,9 @@ public class CartServiceImpl implements CartService {
 
     @Reference
     private CategoryService categoryService;
+
+    @Autowired
+    private PreferentialService preferentialService;
 
 
     @Override
@@ -202,35 +206,38 @@ public class CartServiceImpl implements CartService {
 
     }
 
-    /*
-    @Autowired
-    private PreferentialService preferentialService;
-
     @Override
     public int preferential(String username) {
 
-        //获取选中的购物车  List<OrderItem>  List<Map>
-        List<OrderItem> orderItemList = findCartList(username).stream()
-                .filter(cart -> (boolean) cart.get("checked") == true)
-                .map(cart -> (OrderItem) cart.get("item"))
-                .collect(Collectors.toList());
+        //获取选中的购物车 List<OrderItem>
+        List<Map<String, Object>> cartList = this.findCartList(username);
+        List<OrderItem> itemList = cartList.stream()
+                .filter(map -> (Boolean) map.get("checked") == true)
+                .map(map -> (OrderItem) map.get("item"))
+                 .collect(Collectors.toList());
 
-        //按分类聚合统计每个分类的金额    group by
-        Map<Integer, IntSummaryStatistics> cartMap = orderItemList.stream()
+        //按分类聚合统计每个分类的金额 group by
+        // 分类  金额
+        // 1     120
+        // 2     500
+
+        Map<Integer, IntSummaryStatistics> cartMap = itemList.stream()
                 .collect(Collectors.groupingBy(OrderItem::getCategoryId3, Collectors.summarizingInt(OrderItem::getMoney)));
+
+        //累计优惠金额
+        int allPreMoney = 0;
         //循环结果，统计每个分类的优惠金额，并累加
-
-        int allPreMoney=0;//累计优惠金额
-        for( Integer categoryId:  cartMap.keySet() ){
-            // 获取品类的消费金额
-            int money = (int)cartMap.get(categoryId).getSum();
-            int preMoney = preferentialService.findPreMoneyByCategoryId(categoryId, money); //获取优惠金额
-            System.out.println("分类："+categoryId+"  消费金额："+ money+  " 优惠金额：" + preMoney );
-
-            allPreMoney+=   preMoney;
+        for (Integer categoryId : cartMap.keySet()) {
+            //获取品类的消费金额
+            IntSummaryStatistics summaryStatistics = cartMap.get(categoryId);
+            int money = (int) summaryStatistics.getSum();
+            //获取优惠金额
+            int preMoney = this.preferentialService.findPreMoneyByCategoryId(categoryId, money);
+            System.out.println("分类:"+categoryId);
+            System.out.println("消费金额:"+money);
+            System.out.println("优惠金额:"+preMoney);
+            allPreMoney+= preMoney;
         }
-
-        return allPreMoney;
-    }*/
-
+        return  allPreMoney;
+    }
 }

@@ -40,11 +40,11 @@ public interface CartService {
      */
     public void deleteCheckedCart(String username);
 
-    /*//**
+    /**
      * 计算购物车的优惠金额
      * @param username
      * @return
-     *//*
-    public int preferential(String username);*/
+     */
+    public int preferential(String username);
 
 }
