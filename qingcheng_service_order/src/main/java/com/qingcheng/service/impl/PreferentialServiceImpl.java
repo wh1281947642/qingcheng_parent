@@ -22,6 +22,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Preferential> findAll() {
         return preferentialMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Preferential> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Preferential> preferentials = (Page<Preferential>) preferentialMapper.selectAll();
@@ -43,6 +45,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Preferential> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return preferentialMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Preferential> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * @param id
      * @return
      */
+    @Override
     public Preferential findById(Integer id) {
         return preferentialMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * 新增
      * @param preferential
      */
+    @Override
     public void add(Preferential preferential) {
         preferentialMapper.insert(preferential);
     }
@@ -83,6 +89,7 @@ public class PreferentialServiceImpl implements PreferentialService {
      * 修改
      * @param preferential
      */
+    @Override
     public void update(Preferential preferential) {
         preferentialMapper.updateByPrimaryKeySelective(preferential);
     }
@@ -91,8 +98,17 @@ public class PreferentialServiceImpl implements PreferentialService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         preferentialMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public int findPreMoneyByCategoryId(Integer categoryId, int money) {
+        //指定查询条件在优惠规格计算表中查询
+
+        //查询条件: 状态1 分类: 消费额 开始时间和结束时间 排序: 消费额降序
+        return 0;
     }
 
     /**

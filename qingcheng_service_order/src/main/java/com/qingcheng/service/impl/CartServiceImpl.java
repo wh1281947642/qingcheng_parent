@@ -195,7 +195,8 @@ public class CartServiceImpl implements CartService {
         //删除选中的购物车
         List<Map<String, Object>> cartList = this.findCartList(username);
         //获得未选中的购物车
-        List<Map<String, Object>> cartListNew = cartList.stream().filter(map -> (Boolean) map.get("checked") == false).collect(Collectors.toList());
+        List<Map<String, Object>> cartListNew = cartList.stream().filter(map -> (Boolean) map.get("checked") == false)
+                .collect(Collectors.toList());
 
         redisTemplate.boundHashOps(CacheKey.CART_LIST).put(username, cartListNew);
 
