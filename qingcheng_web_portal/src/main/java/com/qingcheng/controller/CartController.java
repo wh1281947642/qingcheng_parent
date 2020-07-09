@@ -69,10 +69,10 @@ public class CartController {
         return new Result();
     }
 
-    /*//**
+    /**
      * 计算当前购物车优惠金额
      * @return
-     *//*
+     */
     @GetMapping("/preferential")
     public Map preferential(){
         String username=SecurityContextHolder.getContext().getAuthentication().getName();
@@ -80,6 +80,5 @@ public class CartController {
         Map map=new HashMap();
         map.put("preferential",preferential);
         return map;
-    }*/
-
+    }
 }
