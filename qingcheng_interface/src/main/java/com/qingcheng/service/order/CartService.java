@@ -47,4 +47,11 @@ public interface CartService {
      */
     public int preferential(String username);
 
+    /**
+     * 获取最新购物车列表
+     * @param username
+     * @return
+     */
+    public List<Map<String,Object>> findNewOrderItemList(String username);
+
 }

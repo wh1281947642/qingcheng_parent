@@ -22,6 +22,7 @@ public class AddressServiceImpl implements AddressService {
      * 返回全部记录
      * @return
      */
+    @Override
     public List<Address> findAll() {
         return addressMapper.selectAll();
     }
@@ -32,6 +33,7 @@ public class AddressServiceImpl implements AddressService {
      * @param size 每页记录数
      * @return 分页结果
      */
+    @Override
     public PageResult<Address> findPage(int page, int size) {
         PageHelper.startPage(page,size);
         Page<Address> addresss = (Page<Address>) addressMapper.selectAll();
@@ -43,6 +45,7 @@ public class AddressServiceImpl implements AddressService {
      * @param searchMap 查询条件
      * @return
      */
+    @Override
     public List<Address> findList(Map<String, Object> searchMap) {
         Example example = createExample(searchMap);
         return addressMapper.selectByExample(example);
@@ -55,6 +58,7 @@ public class AddressServiceImpl implements AddressService {
      * @param size
      * @return
      */
+    @Override
     public PageResult<Address> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
@@ -67,6 +71,7 @@ public class AddressServiceImpl implements AddressService {
      * @param id
      * @return
      */
+    @Override
     public Address findById(Integer id) {
         return addressMapper.selectByPrimaryKey(id);
     }
@@ -75,6 +80,7 @@ public class AddressServiceImpl implements AddressService {
      * 新增
      * @param address
      */
+    @Override
     public void add(Address address) {
         addressMapper.insert(address);
     }
@@ -83,6 +89,7 @@ public class AddressServiceImpl implements AddressService {
      * 修改
      * @param address
      */
+    @Override
     public void update(Address address) {
         addressMapper.updateByPrimaryKeySelective(address);
     }
@@ -91,8 +98,17 @@ public class AddressServiceImpl implements AddressService {
      *  删除
      * @param id
      */
+    @Override
     public void delete(Integer id) {
         addressMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public List<Address> findByUsername(String username) {
+        Example example=new Example(Address.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("username",username);
+        return addressMapper.selectByExample(example);
     }
 
     /**
