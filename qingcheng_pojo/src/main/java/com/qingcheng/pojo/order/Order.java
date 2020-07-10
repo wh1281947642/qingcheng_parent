@@ -2,10 +2,15 @@ package com.qingcheng.pojo.order;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+
 /**
- * order实体类
- * @author Administrator
- *
+ * <p>
+ * <code>Order</code>
+ * </p>
+ * 订单表
+ * @author huiwang45@iflytek.com
+ * @description
+ * @date 2020/07/10 16:22
  */
 @Table(name="tb_order")
 public class Order implements Serializable{

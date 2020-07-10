@@ -2,13 +2,13 @@ package com.qingcheng.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.qingcheng.entity.Result;
+import com.qingcheng.pojo.order.Order;
 import com.qingcheng.pojo.user.Address;
 import com.qingcheng.service.order.CartService;
+import com.qingcheng.service.order.OrderService;
 import com.qingcheng.service.user.AddressService;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,6 +34,9 @@ public class CartController {
 
     @Reference
     private AddressService addressService;
+
+    @Reference
+    private OrderService orderService;
 
     @GetMapping("/findCartList")
     public List<Map<String,Object>> findCartList(){
@@ -105,5 +108,17 @@ public class CartController {
     public List<Address> findAddressList(){
         String username=SecurityContextHolder.getContext().getAuthentication().getName();
         return addressService.findByUsername(username);
+    }
+
+    /**
+     * 保存订单
+     * @param order
+     * @return
+     */
+    @PostMapping("/saveOrder")
+    public Map<String,Object> saveOrder(@RequestBody Order order ){
+        String username=SecurityContextHolder.getContext().getAuthentication().getName();
+        order.setUsername(username);
+        return  orderService.add(order);
     }
 }
