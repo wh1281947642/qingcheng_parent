@@ -1,6 +1,7 @@
 package com.qingcheng.service.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.qingcheng.dao.OrderConfigMapper;
@@ -16,6 +17,7 @@ import com.qingcheng.service.goods.SkuService;
 import com.qingcheng.service.order.CartService;
 import com.qingcheng.service.order.OrderService;
 import com.qingcheng.util.IdWorker;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
@@ -49,6 +51,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderItemMapper orderItemMapper;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
     /**
      * 返回全部记录
      * @return
@@ -124,39 +128,46 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("库存不足!");
         }
 
-        //3.保存订单主表
-        order.setId(String.valueOf(idWorker.nextId()));
-        //总数
-        IntStream numStream = itemList.stream().mapToInt(OrderItem::getNum);
-        int totalNum = numStream.sum();
-        order.setTotalNum(totalNum);
-        //总价钱
-        IntStream moneyStream = itemList.stream().mapToInt(OrderItem::getMoney);
-        int totalMoney = moneyStream.sum();
-        order.setTotalMoney(totalMoney);
-        //计算满减优惠金额
-        int preMoney = this.cartService.preferential(order.getUsername());
-        order.setPreMoney(preMoney);
-        //支付金额
-        order.setPayMoney(totalMoney-preMoney);
-        //订单的创建时间
-        order.setCreateTime(new Date());
-        //订单状态
-        order.setOrderStatus("0");
-        //支付状态
-        order.setPayStatus("0");
-        //发货状态
-        order.setConsignStatus("0");
-        this.orderMapper.insertSelective(order);
+        try {
+            //3.保存订单主表
+            order.setId(String.valueOf(idWorker.nextId()));
+            //总数
+            IntStream numStream = itemList.stream().mapToInt(OrderItem::getNum);
+            int totalNum = numStream.sum();
+            order.setTotalNum(totalNum);
+            //总价钱
+            IntStream moneyStream = itemList.stream().mapToInt(OrderItem::getMoney);
+            int totalMoney = moneyStream.sum();
+            order.setTotalMoney(totalMoney);
+            //计算满减优惠金额
+            int preMoney = this.cartService.preferential(order.getUsername());
+            order.setPreMoney(preMoney);
+            //支付金额
+            order.setPayMoney(totalMoney-preMoney);
+            //订单的创建时间
+            order.setCreateTime(new Date());
+            //订单状态
+            order.setOrderStatus("0");
+            //支付状态
+            order.setPayStatus("0");
+            //发货状态
+            order.setConsignStatus("0");
+            this.orderMapper.insertSelective(order);
 
-        //4.保存订单明细表
-        //打折比例
-        double proportion = (double)order.getPayMoney()/totalMoney;
-        for (OrderItem orderItem : itemList) {
-            orderItem.setId(String.valueOf(idWorker.nextId()));
-            orderItem.setOrderId(order.getId());
-            orderItem.setPayMoney((int)(orderItem.getMoney()*proportion));
-            this.orderItemMapper.insertSelective(orderItem);
+            //4.保存订单明细表
+            //打折比例
+            double proportion = (double)order.getPayMoney()/totalMoney;
+            for (OrderItem orderItem : itemList) {
+                orderItem.setId(String.valueOf(idWorker.nextId()));
+                orderItem.setOrderId(order.getId());
+                orderItem.setPayMoney((int)(orderItem.getMoney()*proportion));
+                this.orderItemMapper.insertSelective(orderItem);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            //发送回滚消息
+            rabbitTemplate.convertAndSend("", "skuback", JSON.toJSONString(itemList));
+            throw  new  RuntimeException("创建订单失败!");
         }
 
         //5.清楚购物车
