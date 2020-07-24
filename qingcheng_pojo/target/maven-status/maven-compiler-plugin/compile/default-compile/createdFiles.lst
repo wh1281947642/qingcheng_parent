@@ -11,6 +11,7 @@ com\qingcheng\pojo\order\Preferential.class
 com\qingcheng\entity\PageResult.class
 com\qingcheng\pojo\goods\Spu.class
 com\qingcheng\pojo\business\Ad.class
+com\qingcheng\pojo\goods\StockBack.class
 com\qingcheng\pojo\user\Address.class
 com\qingcheng\pojo\goods\Goods.class
 com\qingcheng\entity\Result.class

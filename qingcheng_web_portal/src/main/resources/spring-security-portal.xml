@@ -10,6 +10,7 @@
 
     <http pattern="/index.do" security="none"></http>
     <http pattern="/search.do" security="none"></http>
+    <http pattern="/wxpay/notify.do" security="none"></http>
 
 	
 </beans:beans>

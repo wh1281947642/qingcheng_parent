@@ -37,4 +37,5 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
     <import resource="classpath:applicationContext-order-dubbo.xml"/>
     <import resource="classpath:applicationContext-redis.xml"/>
     <import resource="classpath:applicationContext-rabbitmq-producer.xml"/>
+    <import resource="classpath:applicationContext-service.xml"/>
 </beans>

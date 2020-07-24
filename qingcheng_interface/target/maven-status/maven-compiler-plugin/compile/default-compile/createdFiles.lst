@@ -25,6 +25,7 @@ com\qingcheng\service\goods\SkuSearchService.class
 com\qingcheng\service\system\LoginLogService.class
 com\qingcheng\service\user\UserService.class
 com\qingcheng\service\goods\AlbumService.class
+com\qingcheng\service\goods\StockBackService.class
 com\qingcheng\service\order\OrderItemService.class
 com\qingcheng\service\user\CitiesService.class
 com\qingcheng\service\order\ReturnOrderService.class
