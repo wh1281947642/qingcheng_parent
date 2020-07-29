@@ -63,8 +63,8 @@ public class WxPayServiceImpl implements WxPayService {
         }
     }
 
-
-    /*@Autowired
+/*
+    @Autowired
     private OrderService orderService;
 
     @Autowired
@@ -101,6 +101,8 @@ public class WxPayServiceImpl implements WxPayService {
             e.printStackTrace();
         }
     }
+
+
 
     @Override
     public Map queryPayStatus(String orderId) {

@@ -49,7 +49,7 @@
                 <version>2.2</version>
                 <configuration>
                     <path>/</path>
-                    <port>9003</port>
+                    <port>9001</port>
                     <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>

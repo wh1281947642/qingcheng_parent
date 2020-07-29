@@ -57,10 +57,11 @@ public class WxPayController {
     @RequestMapping("/notify")
     public void notifyLogic(HttpServletRequest request){
         System.out.println("支付成功回调。。。。");
-        /*try {
+        try {
             InputStream inputStream = (InputStream)request.getInputStream();
             ByteArrayOutputStream outputStream=new ByteArrayOutputStream();
 
+            //把输入流写入到输出流
             byte[] buffer=new byte[1024];
             int len=0;
             while( ( len= inputStream.read(buffer) )!=-1   ){
@@ -70,11 +71,11 @@ public class WxPayController {
             inputStream.close();
             String result=new String( outputStream.toByteArray(),"utf-8" );
             System.out.println(result);
-            wxPayService.notifyLogic(result);
+            //wxPayService.notifyLogic(result);
 
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     /*

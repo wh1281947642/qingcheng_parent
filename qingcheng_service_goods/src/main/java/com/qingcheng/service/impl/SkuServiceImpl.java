@@ -89,6 +89,7 @@ public class SkuServiceImpl implements SkuService {
      */
     @Override
     public Sku findById(String id) {
+        System.out.println("SkuServiceImpl-findById");
         return skuMapper.selectByPrimaryKey(id);
     }
 
