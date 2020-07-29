@@ -16,23 +16,11 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <p>
- * <code>SkuServiceImpl</code>
- * </p>
- * 
- * @author huiwang45@iflytek.com
- * @description
- * @date 2020/05/19 16:59
- */
-@Service
+@Service(interfaceClass =SkuService.class )
 public class SkuServiceImpl implements SkuService {
 
     @Autowired
     private SkuMapper skuMapper;
-
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     /**
      * 返回全部记录
@@ -89,7 +77,6 @@ public class SkuServiceImpl implements SkuService {
      */
     @Override
     public Sku findById(String id) {
-        System.out.println("SkuServiceImpl-findById");
         return skuMapper.selectByPrimaryKey(id);
     }
 
@@ -120,98 +107,76 @@ public class SkuServiceImpl implements SkuService {
         skuMapper.deleteByPrimaryKey(id);
     }
 
-    @Override
-    public void saveAllPriceToRedis(){
+    @Autowired
+    private RedisTemplate redisTemplate;
 
-        if (!redisTemplate.hasKey(CacheKey.SKU_PRICE)){
+    @Override
+    public void saveAllPriceToRedis() {
+
+        if(!redisTemplate.hasKey(CacheKey.SKU_PRICE)){
             System.out.println("商品价格缓存预热");
             //查询所有的商品的价格
             List<Sku> skuList = skuMapper.selectAll();
-            skuList.forEach(sku -> {
-                if ("1".equals(sku.getStatus())){
+            for(Sku sku:skuList){
+                if("1".equals(sku.getStatus())){
                     //放入缓存
-                    redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put(sku.getId(), sku.getPrice());
+                    redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put(sku.getId(),sku.getPrice());
                 }
-            });
-        }else {
+            }
+        }else{
             System.out.println("已存在价格，跳过缓存预热");
         }
+
+
     }
 
-
-    /**
-     * 根据sku id查询价格
-     * @description
-     * @author huiwang45@iflytek.com
-     * @date 2020/05/19 17:19
-     * @param
-     * @return
-     */
     @Override
-    public Integer findPrice(String id){
-        return  (Integer)redisTemplate.boundHashOps(CacheKey.SKU_PRICE).get(id);
+    public Integer findPrice(String id) {
+        return (Integer) redisTemplate.boundHashOps(CacheKey.SKU_PRICE).get(id);
     }
 
-    /**
-     * 根据skuid跟新商品价格
-     * @description
-     * @author huiwang45@iflytek.com
-     * @date 2020/05/19 19:02
-     * @param
-     * @return
-     */
     @Override
-    public void savePriceToRedisById(String id,Integer price){
-        redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put(id, price);
+    public void savePriceToRedisById(String id, Integer price) {
+        redisTemplate.boundHashOps(CacheKey.SKU_PRICE).put( id,price );
     }
 
-    /**
-     * 根据sku id 删除商品价格缓存
-     * @description
-     * @author huiwang45@iflytek.com
-     * @date 2020/05/19 19:08
-     * @param
-     * @return
-     */
     @Override
-    public void deletePriceFromRedis(String id){
+    public void deletePriceFromRedis(String id) {
         redisTemplate.boundHashOps(CacheKey.SKU_PRICE).delete(id);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public boolean deductionStock(List<OrderItem> orderItemList) {
 
         //检查是否可以扣减库存
-        //是否可以扣减
-        boolean isDeduction = true;
-        for (OrderItem orderItem : orderItemList) {
-            Sku sku = this.findById(orderItem.getSkuId());
-            if (sku == null ){
-                isDeduction =false;
+        boolean idDeduction=true;//是否可以扣减
+        for( OrderItem orderItem:orderItemList){
+            Sku sku = findById(orderItem.getSkuId());
+            if(sku==null){
+                idDeduction=false;
                 break;
             }
             if(!"1".equals(sku.getStatus())){
-                isDeduction =false;
+                idDeduction=false;
                 break;
             }
-            if (sku.getNum().intValue()<orderItem.getNum()){
-                isDeduction =false;
+            if( sku.getNum().intValue()<orderItem.getNum().intValue() ){
+                idDeduction=false;
                 break;
             }
-
         }
 
-        if (isDeduction){
-            for (OrderItem item : orderItemList) {
-                //执行扣减
-                this.skuMapper.deductionStock(item.getSkuId(), item.getNum());
-                //增加销量
-                this.skuMapper.addSaleNum(item.getSkuId(), item.getNum());
+        //执行扣减
+        if(idDeduction){
+            for(OrderItem orderItem:orderItemList){
+                skuMapper.deductionStock(  orderItem.getSkuId(),orderItem.getNum());//扣减库存
+                skuMapper.addSaleNum(orderItem.getSkuId(),orderItem.getNum());//增加销量
             }
         }
-        return  isDeduction;
+        return idDeduction;
     }
+
 
     /**
      * 构建查询条件

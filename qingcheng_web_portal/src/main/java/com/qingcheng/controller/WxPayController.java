@@ -71,7 +71,7 @@ public class WxPayController {
             inputStream.close();
             String result=new String( outputStream.toByteArray(),"utf-8" );
             System.out.println(result);
-            //wxPayService.notifyLogic(result);
+            wxPayService.notifyLogic(result);
 
         } catch (IOException e) {
             e.printStackTrace();

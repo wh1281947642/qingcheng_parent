@@ -19,6 +19,7 @@ import com.qingcheng.service.order.OrderService;
 import com.qingcheng.util.IdWorker;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.swing.*;
@@ -241,31 +242,77 @@ public class OrderServiceImpl implements OrderService {
         //订单超时未付款 自动关闭
         //查询超时时间
         OrderConfig orderConfig = orderConfigMapper.selectByPrimaryKey(1);
-        Integer orderTimeout = orderConfig.getOrderTimeout();//超时时间（分）60
-        LocalDateTime localDateTime = LocalDateTime.now().minusMinutes(orderTimeout);//得到超时的时间点
+        //超时时间（分）60
+        Integer orderTimeout = orderConfig.getOrderTimeout();
+        //得到超时的时间点
+        LocalDateTime localDateTime = LocalDateTime.now().minusMinutes(orderTimeout);
         //设置查询条件
         Example example=new Example(Order.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andLessThan("createTime",localDateTime);//创建时间小于超时时间
-        criteria.andEqualTo("orderStatus","0");//未付款的
-        criteria.andEqualTo("isDelete","0");//未删除的
+        //创建时间小于超时时间
+        criteria.andLessThan("createTime",localDateTime);
+        //未付款的
+        criteria.andEqualTo("orderStatus","0");
+        //未删除的
+        criteria.andEqualTo("isDelete","0");
         //查询超时订单
         List<Order> orders = orderMapper.selectByExample(example);
         for(Order order :orders){
             //记录订单变动日志
             OrderLog orderLog=new OrderLog();
-            orderLog.setOperater("system");// 系统
-            orderLog.setOperateTime(new Date());//当前日期
+            // 系统
+            orderLog.setOperater("system");
+            //当前日期
+            orderLog.setOperateTime(new Date());
             orderLog.setOrderStatus("4");
             orderLog.setPayStatus(order.getPayStatus());
             orderLog.setConsignStatus(order.getConsignStatus());
             orderLog.setRemarks("超时订单，系统自动关闭");
-            orderLog.setOrderId(Long.valueOf(order.getId()));
+            orderLog.setOrderId(order.getId());
             orderLogMapper.insert(orderLog);
             //更改订单状态
             order.setOrderStatus("4");
-            order.setCloseTime(new Date());//关闭日期
+            //关闭日期
+            order.setCloseTime(new Date());
             orderMapper.updateByPrimaryKeySelective(order);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePayStatus(String orderId, String transactionId) {
+        System.out.println("调用修改订单状态");
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        if(order!=null && "0".equals( order.getPayStatus() )){
+            //修改订单状态等信息
+            //支付状态
+            order.setPayStatus("1");
+            //订单状态
+            order.setOrderStatus("1");
+            //修改日期
+            order.setUpdateTime(new Date());
+            //支付日期
+            order.setPayTime(new Date());
+            //交易流水号
+            order.setTransactionId(transactionId);
+            //修改
+            orderMapper.updateByPrimaryKeySelective(order);
+
+            //记录订单日志
+            OrderLog orderLog=new OrderLog();
+            orderLog.setId( idWorker.nextId()+"" );
+            //系统
+            orderLog.setOperater("system");
+            //操作时间
+            orderLog.setOperateTime(new Date());
+            //订单状态
+            orderLog.setOrderStatus("1");
+            //支付状态
+            orderLog.setPayStatus("1");
+            //备注
+            orderLog.setRemarks("支付流水号："+transactionId);
+            orderLog.setOrderId(orderId);
+            orderLogMapper.insert(orderLog);
         }
     }
 

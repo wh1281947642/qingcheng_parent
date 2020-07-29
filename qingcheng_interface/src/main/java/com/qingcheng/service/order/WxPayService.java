@@ -18,7 +18,7 @@ public interface WxPayService {
      * 微信支付回调
      * @param xml
      */
-   // public void notifyLogic(String xml);
+    public void notifyLogic(String xml);
 
 
     /*//**

@@ -17,10 +17,10 @@ public interface SkuService {
     public PageResult<Sku> findPage(int page, int size);
 
 
-    public List<Sku> findList(Map<String, Object> searchMap);
+    public List<Sku> findList(Map<String,Object> searchMap);
 
 
-    public PageResult<Sku> findPage(Map<String, Object> searchMap, int page, int size);
+    public PageResult<Sku> findPage(Map<String,Object> searchMap,int page, int size);
 
 
     public Sku findById(String id);
@@ -33,41 +33,34 @@ public interface SkuService {
 
     public void delete(String id);
 
+
     public void saveAllPriceToRedis();
 
     /**
      * 根据sku id查询价格
-     * @description
-     * @author huiwang45@iflytek.com
-     * @date 2020/05/19 17:19
-     * @param
+     * @param id
      * @return
      */
     public Integer findPrice(String id);
 
     /**
-     * 根据skuid跟新商品价格
-     * @description
-     * @author huiwang45@iflytek.com
-     * @date 2020/05/19 19:02
-     * @param
-     * @return
+     * 根据sku id 更新商品价格
+     * @param id
+     * @param price
      */
-    public void savePriceToRedisById(String id,Integer price);
+    public void savePriceToRedisById(String id,Integer price );
 
     /**
-     * 根据sku id 删除商品价格缓存
-     * @description
-     * @author huiwang45@iflytek.com
-     * @date 2020/05/19 19:08
-     * @param
-     * @return
+     * 根据sku id 删除商品价格缓存
+     * @param id
      */
     public void deletePriceFromRedis(String id);
+
 
     /**
      * 批量扣减库存
      * @param orderItemList
      */
     public boolean deductionStock(List<OrderItem> orderItemList);
+
 }
