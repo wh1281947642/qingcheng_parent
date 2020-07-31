@@ -8,6 +8,7 @@ import com.qingcheng.pojo.order.OrderItem;
 import com.qingcheng.service.goods.CategoryService;
 import com.qingcheng.service.goods.SkuService;
 import com.qingcheng.service.order.CartService;
+import com.qingcheng.service.order.OrderService;
 import com.qingcheng.service.order.PreferentialService;
 import com.qingcheng.util.CacheKey;
 import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  * @description
  * @date 2020/07/03 15:13
  */
-@Service
+@Service(interfaceClass = CartService.class)
 public class CartServiceImpl implements CartService {
 
     @Autowired

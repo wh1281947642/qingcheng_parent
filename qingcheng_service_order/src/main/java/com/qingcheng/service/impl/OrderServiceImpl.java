@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Service
+@Service(interfaceClass = OrderService.class)
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -178,6 +178,7 @@ public class OrderServiceImpl implements OrderService {
         HashMap<String, Object> hashMap = new HashMap<>();
         //订单号
         hashMap.put("ordersn", order.getId());
+        System.out.println("order.getId():"+order.getId());
         //实际支付的金额
         hashMap.put("money", order.getPayMoney());
 

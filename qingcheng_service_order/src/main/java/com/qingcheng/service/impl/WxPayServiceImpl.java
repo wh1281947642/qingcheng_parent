@@ -89,7 +89,7 @@ public class WxPayServiceImpl implements WxPayService {
                 if("SUCCESS".equals(map.get("result_code"))){
                     orderService.updatePayStatus( map.get("out_trade_no"),map.get("transaction_id") );
                     //发送消息给mq
-                    //rabbitTemplate.convertAndSend("paynotify","",map.get("out_trade_no"));
+                    rabbitTemplate.convertAndSend("paynotify","",map.get("out_trade_no"));
                 }else{
                     //记录日志
                 }
