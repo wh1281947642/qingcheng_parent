@@ -10,6 +10,7 @@ F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\co
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\system\Admin.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\goods\StockBack.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\order\ReturnOrderItem.java
+F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\seckill\SeckillOrder.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\order\ReturnCause.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\goods\Template.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\system\Role.java
@@ -32,4 +33,5 @@ F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\co
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\entity\PageResult.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\business\Activity.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\order\Preferential.java
+F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\seckill\SeckillGoods.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_pojo\src\main\java\com\qingcheng\pojo\user\Cities.java
