@@ -23,9 +23,11 @@ F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\ja
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\goods\AlbumService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\system\MenuService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\goods\ParaService.java
+F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\seckill\SeckillOrderService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\goods\SpecService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\business\ActivityService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\user\AddressService.java
+F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\seckill\SeckillGoodsService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\order\CategoryReportService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\goods\SkuSearchService.java
 F:\MyProject\QingchengMall\code\qingcheng_parent\qingcheng_interface\src\main\java\com\qingcheng\service\goods\BrandService.java

@@ -42,15 +42,12 @@ public class SeckillOrderController {
         try {
             //调用Service下单操作
             Boolean bo = seckillOrderService.add(id, time, username);
-
             if(bo){
                 return new Result(0,"抢单成功！");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return new Result(1,"抢单失败！");
     }
-
 }

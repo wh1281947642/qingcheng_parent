@@ -6,7 +6,9 @@ com\qingcheng\pojo\order\ReturnOrderItem.class
 com\qingcheng\pojo\goods\Para.class
 com\qingcheng\pojo\business\Activity.class
 com\qingcheng\pojo\order\ReturnCause.class
+com\qingcheng\pojo\seckill\SeckillOrder.class
 com\qingcheng\pojo\user\Areas.class
+com\qingcheng\pojo\seckill\SeckillGoods.class
 com\qingcheng\pojo\order\Preferential.class
 com\qingcheng\entity\PageResult.class
 com\qingcheng\pojo\goods\Spu.class

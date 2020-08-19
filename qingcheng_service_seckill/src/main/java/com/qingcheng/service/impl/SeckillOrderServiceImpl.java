@@ -1,4 +1,3 @@
-/*
 package com.qingcheng.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
@@ -12,12 +11,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Date;
 
-*/
 /****
  * @Author:itheima
  * @Date:2019/5/27 18:06
  * @Description:
- *****//*
+ *****/
 
 @Service
 public class SeckillOrderServiceImpl implements SeckillOrderService {
@@ -31,14 +29,13 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
     @Autowired
     private IdWorker idWorker;
 
-    */
-/***
+    /***
      * 下单实现
      * @param id:商品ID
      * @param time:商品时区
      * @param username:用户名
      * @return
-     *//*
+     */
 
     @Override
     public Boolean add(Long id, String time, String username) {
@@ -68,10 +65,9 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
                 //将数据同步到Redis
                 redisTemplate.boundHashOps("SeckillGoods_"+time).put(id,goods);
             }
-
             return true;
         }
         return false;
     }
 }
-*/
+

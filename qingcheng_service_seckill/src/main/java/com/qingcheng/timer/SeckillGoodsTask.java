@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ public class SeckillGoodsTask {
    @Autowired
     private RedisTemplate redisTemplate;
 
-   @Autowired
+   @Resource
     private SeckillGoodsMapper seckillGoodsMapper;
 
     /*****
