@@ -247,7 +247,7 @@
                             <div class="fl">
                                 <ul class="btn-choose unstyled">
                                     <li style="line-height: 50px;">
-                                        <a href="javascript:void(0)" @click="add()" class="addshopcar">立即抢购</a>
+                                        <a href="javascript:void(0)" @click="add()" class="addshopcar">立即抢购</a>{{msg}}
                                     </li>
                                 </ul>
                             </div>
@@ -906,8 +906,50 @@
         data:{
             entity:{},      //商品详情
             message:'距离结束：',     //倒计时时间提示
+            msg:'',         //抢单提示信息
         },
         methods:{
+            //查询订单抢单状态
+            queryStatus:function () {
+                //120秒查询抢购信息
+                let count=120;
+
+                //定时查询->window.setInterval()
+                let queryClock = window.setInterval(function () {
+                    //时间递减
+                    count--;
+
+                    //根据状态判断对应操作
+                    axios.get('/seckill/order/query.do').then(function (response) {
+                        //403->未登录->登录
+                        if(response.data.code==403){
+                            location.href='/redirect/back.do';
+                        }else if(response.data.code==1){
+                            //1->排队中->继续定时查询
+                            app.msg='正在排队....'+count;
+                        }else if(response.data.code==2){
+                            //2->抢单成功
+                            app.msg='抢单成功，即将进入支付！';
+
+                            //跳转到支付页->携带订单号+订单金额
+                            location.href='/pay.html?orderId='+response.data.other.orderId+'&money='+response.data.other.money*100;
+                        }else{
+                            //0->抢单失败
+                            if(response.data.code==0){
+                                window.clearInterval(queryClock);
+                                app.msg='服务器繁忙，请稍后再试！';
+                            }else if(response.data.code==404){
+                                //404->找不到数据
+                                app.msg='抢单失败，稍后再试！';
+                            }
+                            //停止查询
+                            window.clearInterval(queryClock);
+                        }
+                    });
+                },1000);
+            },
+
+
             //添加订单方法
             add:function () {
                 //获取地址栏time
@@ -916,10 +958,13 @@
                 let id = getQueryString("id");
 
                 axios.get('/seckill/order/add.do?time='+time+'&id='+id).then(function (response) {
-                    if(response.data.code==0){
-                        alert('秒杀抢单成功！');
+                    if(response.data.code==0 || (response.data.code==2 &&response.data.message=="100")){
+                        //排队成功,查询排队状态
+                        app.queryStatus();
                     }else if(response.data.code==403){
                         location.href='/redirect/back.do';
+                    }else if(response.data.code==2 &&response.data.message=="101"){
+                        alert("已售罄！")
                     }else{
                         alert(response.data.message)
                     }

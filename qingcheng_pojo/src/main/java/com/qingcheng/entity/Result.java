@@ -8,6 +8,8 @@ public class Result implements Serializable {
 
     private String message;//消息
 
+    private Object other;//消息
+
     public Result(Integer code, String message) {
         this.code = code;
         this.message = message;
@@ -32,5 +34,13 @@ public class Result implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Object getOther() {
+        return other;
+    }
+
+    public void setOther(Object other) {
+        this.other = other;
     }
 }

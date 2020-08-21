@@ -1,7 +1,5 @@
 package com.qingcheng.timer;
 
-import com.alibaba.dubbo.common.utils.CollectionUtils;
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.qingcheng.dao.SeckillGoodsMapper;
 import com.qingcheng.pojo.seckill.SeckillGoods;
 import com.qingcheng.util.DateUtil;
@@ -12,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -26,10 +23,10 @@ import java.util.Set;
 @Component
 public class SeckillGoodsTask {
 
-   @Autowired
+    @Autowired
     private RedisTemplate redisTemplate;
 
-   @Resource
+    @Autowired
     private SeckillGoodsMapper seckillGoodsMapper;
 
     /*****
@@ -38,16 +35,10 @@ public class SeckillGoodsTask {
      */
     @Scheduled(cron = "0/15 * * * * ?")
     public void loadGoods(){
-        System.out.println("测试!");
-       //1.查询所有时间区间
+        //1.查询所有时间区间
         List<Date> dateMenus = DateUtil.getDateMenus();
         
         //2.循环时间区间，查询每个时间区间的秒杀商品
-        //startTime:Fri Aug 07 14:00:00 CST 2020
-        //startTime:Fri Aug 07 16:00:00 CST 2020
-        //startTime:Fri Aug 07 18:00:00 CST 2020
-        //startTime:Fri Aug 07 20:00:00 CST 2020
-        // startTime:Fri Aug 07 22:00:00 CST 2020
         for (Date startTime : dateMenus) {
             Example example = new Example(SeckillGoods.class);
             Example.Criteria criteria = example.createCriteria();
@@ -65,11 +56,8 @@ public class SeckillGoodsTask {
 
             //2.4 过滤Redis中已经存在的该区间的秒杀商品
             Set keys = redisTemplate.boundHashOps("SeckillGoods_" + DateUtil.date2Str(startTime)).keys();
-            //if(keys!=null && keys.size()>0){
+            if(keys!=null && keys.size()>0){
                 //select * from table where id not in(keys)
-                //criteria.andNotIn("id",keys);
-            //}
-            if (CollectionUtils.isNotEmpty(keys)){
                 criteria.andNotIn("id",keys);
             }
 
@@ -78,17 +66,36 @@ public class SeckillGoodsTask {
 
             //3.将秒杀商品存入到Redis缓存
             for (SeckillGoods seckillGood : seckillGoods) {
+                //完整数据
                 redisTemplate.boundHashOps("SeckillGoods_"+DateUtil.date2Str(startTime)).put(seckillGood.getId(),seckillGood);
+
+                //剩余库存个数  seckillGood.getStockCount()   =   5
+                //              创建独立队列:存储商品剩余库存
+                //              SeckillGoodsList_110:
+                //                                  [110,110,110,110,110]
+                Long[] ids = pushIds(seckillGood.getStockCount(), seckillGood.getId());
+                //创建队列
+                redisTemplate.boundListOps("SeckillGoodsCountList_"+seckillGood.getId()).leftPushAll(ids);
+
+                //创建自定key的值
+                redisTemplate.boundHashOps("SeckillGoodsCount").increment(seckillGood.getId(),seckillGood.getStockCount());
             }
         }
     }
 
-    public static void main(String[] args) {
-        List<Date> dateMenus = DateUtil.getDateMenus();
-        dateMenus.forEach(startTime->{
-            System.out.println("startTime:"+startTime);
-        });
 
+    /**
+     * 组装商品ID，将商品ID组装成数组
+     * @param len:商品剩余个数
+     * @param id：商品ID
+     * @return
+     */
+    public Long[] pushIds(int len,Long id){
+        Long[] ids = new Long[len];
+        for (int i = 0; i <len ; i++) {
+            ids[i]=id;
+        }
+        return ids;
     }
 
 }
