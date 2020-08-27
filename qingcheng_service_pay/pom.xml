@@ -8,7 +8,8 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>qingcheng_web_seckill</artifactId>
+
+    <artifactId>qingcheng_service_pay</artifactId>
     <packaging>war</packaging>
 
     <dependencies>
@@ -19,13 +20,13 @@
         </dependency>
         <dependency>
             <groupId>com.qingcheng</groupId>
-            <artifactId>qingcheng_common_cas</artifactId>
+            <artifactId>qingcheng_common_service</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.wxpay</groupId>
             <artifactId>wxpay-sdk</artifactId>
-            <version>3.0.9</version>
+            <version>0.0.3</version>
         </dependency>
     </dependencies>
 
@@ -37,11 +38,20 @@
                 <version>2.2</version>
                 <configuration>
                     <!-- 指定端口 -->
-                    <port>9104</port>
+                    <port>9006</port>
                     <!-- 请求路径 -->
                     <path>/</path>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
 </project>

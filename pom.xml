@@ -18,6 +18,7 @@
         <module>qingcheng_service_config</module>
         <module>qingcheng_service_goods</module>
         <module>qingcheng_service_order</module>
+        <module>qingcheng_service_pay</module>
         <module>qingcheng_service_seckill</module>
         <module>qingcheng_service_system</module>
         <module>qingcheng_service_user</module>
